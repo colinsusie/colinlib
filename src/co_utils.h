@@ -20,4 +20,15 @@
 // 通过结构的成员指针，向上取向结构指针
 #define CO_CONTAINEROF(ptr, type, member) (type*)(((char*)((type*)ptr)) - CO_OFFSETOF(type, member)))
 
+// 取下一个2的幂
+static inline uint32_t roundup_pow2(uint32_t size) {
+    --size;
+    size |= size >> 1;
+    size |= size >> 2;
+    size |= size >> 4;
+    size |= size >> 8;
+    size |= size >> 16;
+    return ++size;
+}
+
 #endif

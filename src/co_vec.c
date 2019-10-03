@@ -2,6 +2,13 @@
 
 #define INIT_CAP 8
 
+static inline void _check_and_grow(covec_t *vec) {
+    if (vec->size + 1 >= vec->cap) {
+        int cap = CO_MAX(INIT_CAP, vec->cap*2);
+        covec_growcap(vec, cap);
+    }
+}
+
 void covec_init(covec_t *vec, uint16_t itemsize) {
     vec->itemsize = itemsize;
     vec->size = 0;
@@ -39,13 +46,6 @@ void covec_growcap(covec_t *vec, int cap) {
     }
 }
 
-static inline void _check_and_grow(covec_t *vec) {
-    if (vec->size + 1 >= vec->cap) {
-        int cap = CO_MAX(INIT_CAP, vec->cap*2);
-        covec_growcap(vec, cap);
-    }
-}
-
 bool covec_push_at(covec_t *vec, int index, void *data) {
     if (index < 0)
         index = vec->size + index;
@@ -53,12 +53,10 @@ bool covec_push_at(covec_t *vec, int index, void *data) {
         return false;
     _check_and_grow(vec);
 
-    char *dst = (char*)vec->data;
     if (index != vec->size) {
-        memmove(dst + (index + 1) * vec->itemsize, dst + index * vec->itemsize, 
-            (vec->size - index) * vec->itemsize);
+        covec_move(vec, index, index + 1, vec->size - index);
     }
-    memcpy(dst + index * vec->itemsize, data, vec->itemsize);
+    memcpy((char*)vec->data + index * vec->itemsize, data, vec->itemsize);
     vec->size++;
     return true;
 }
@@ -114,9 +112,7 @@ bool covec_del_at(covec_t *vec, int index, void *data) {
         covec_get_at(vec, index, data);
     }
     if (index != vec->size-1) {
-        char *dst = (char*)vec->data;
-        memmove(dst + index * vec->itemsize, dst + (index + 1) * vec->itemsize, 
-            (vec->size - index - 1) * vec->itemsize);
+        covec_move(vec, index + 1, index, vec->size - index - 1);
     }
     vec->size--;
     return true;
@@ -134,4 +130,21 @@ void covec_copy(covec_t *vfrom, covec_t *vto) {
     covec_clear(vto);
     covec_resize(vto, vfrom->size);
     memcpy(vto->data, vfrom->data, vfrom->size * vfrom->itemsize);
+}
+
+void covec_move(covec_t *vec, int from, int to, int count) {
+    char *dst = (char*)vec->data;
+    memmove(dst + to * vec->itemsize, dst + from * vec->itemsize, count * vec->itemsize);
+}
+
+void covec_swap(covec_t *vec, int idx1, int idx2) {
+    uint8_t data1[32], data2[32];
+    uint8_t *ptr1 = vec->itemsize <= 32 ? data1 : malloc(vec->itemsize);
+    uint8_t *ptr2 = vec->itemsize <= 32 ? data2 : malloc(vec->itemsize);
+    if (covec_get_at(vec, idx1, ptr1) && covec_get_at(vec, idx2, ptr2)) {
+        covec_set_at(vec, idx1, ptr2);
+        covec_set_at(vec, idx2, ptr1);
+    }
+    if (ptr1 != data1) free(ptr1);
+    if (ptr2 != data2) free(ptr2);
 }

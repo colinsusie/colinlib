@@ -59,5 +59,9 @@ bool covec_del_last(covec_t *vec, void *data);
 
 // 拷贝向量
 void covec_copy(covec_t *vfrom, covec_t *vto);
+// 批量将from的元素移到to的位置，to的内容会被覆盖：要特别小心溢出
+void covec_move(covec_t *vec, int from, int to, int count);
+// 交换两个元素
+void covec_swap(covec_t *vec, int idx1, int idx2);
 
 #endif
