@@ -3,8 +3,10 @@ common library for C language
 
 - falloc OK
 - dict OK
+- vector ok
 - set
-- array
+- queue
 - list
 - buffer
 - utf8
+- string

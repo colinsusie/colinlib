@@ -41,7 +41,8 @@ void covec_growcap(covec_t *vec, int cap) {
 
 static inline void _check_and_grow(covec_t *vec) {
     if (vec->size + 1 >= vec->cap) {
-        covec_growcap(vec, vec->cap * 2);
+        int cap = CO_MAX(INIT_CAP, vec->cap*2);
+        covec_growcap(vec, cap);
     }
 }
 
@@ -52,22 +53,22 @@ bool covec_push_at(covec_t *vec, int index, void *data) {
         return false;
     _check_and_grow(vec);
 
-    char *cdata = (char*)vec->data;
+    char *dst = (char*)vec->data;
     if (index != vec->size) {
-        memmove(cdata + (index + 1) * vec->itemsize, cdata + index * vec->itemsize, 
+        memmove(dst + (index + 1) * vec->itemsize, dst + index * vec->itemsize, 
             (vec->size - index) * vec->itemsize);
     }
-    memcpy(data + index * vec->itemsize, data, vec->itemsize);
+    memcpy(dst + index * vec->itemsize, data, vec->itemsize);
     vec->size++;
     return true;
 }
 
 bool covec_push_first(covec_t *vec, void *data) {
-    covec_push_at(vec, 0, data);
+    return covec_push_at(vec, 0, data);
 }
 
 bool covec_push_last(covec_t *vec, void *data) {
-    covec_push_at(vec, vec->size, data);
+    return covec_push_at(vec, vec->size, data);
 }
 
 bool covec_get_at(covec_t *vec, int index, void *data) {
@@ -113,8 +114,8 @@ bool covec_del_at(covec_t *vec, int index, void *data) {
         covec_get_at(vec, index, data);
     }
     if (index != vec->size-1) {
-        char *cdata = (char*)vec->data;
-        memmove(cdata + index * vec->itemsize, cdata + (index + 1) * vec->itemsize, 
+        char *dst = (char*)vec->data;
+        memmove(dst + index * vec->itemsize, dst + (index + 1) * vec->itemsize, 
             (vec->size - index - 1) * vec->itemsize);
     }
     vec->size--;
@@ -122,11 +123,11 @@ bool covec_del_at(covec_t *vec, int index, void *data) {
 }
 
 bool covec_del_first(covec_t *vec, void *data) {
-    covec_del_at(vec, 0, data);
+    return covec_del_at(vec, 0, data);
 }
 
 bool covec_del_last(covec_t *vec, void *data) {
-    covec_del_at(vec, vec->size-1, data);
+    return covec_del_at(vec, vec->size-1, data);
 }
 
 void covec_copy(covec_t *vfrom, covec_t *vto) {
