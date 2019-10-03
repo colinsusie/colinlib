@@ -1,5 +1,5 @@
-#ifndef __CO_DEFINES__
-#define __CO_DEFINES__
+#ifndef __CO_UTILS__
+#define __CO_UTILS__
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,6 +19,5 @@
 #define CO_OFFSETOF(type, member) ((size_t)&((type*)0)->member)
 // 通过结构的成员指针，向上取向结构指针
 #define CO_CONTAINEROF(ptr, type, member) (type*)(((char*)((type*)ptr)) - CO_OFFSETOF(type, member)))
-
 
 #endif

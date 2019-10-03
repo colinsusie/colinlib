@@ -53,34 +53,40 @@ void test_str_dict() {
     printf("set data======================================\n");
     int i;
     char key[100];
-    for (i = 0; i < 1000; ++i) {
-        sprintf(key, "thisisakey%d", i);
+    for (i = 0; i < 100; ++i) {
+        sprintf(key, "key%d", i);
         size_t len = strlen(key);
         codict_str_set(&dict, key, &i, len, sizeof(int));
     }
 
     printf("del data======================================\n");
-    for (i = 0; i < 970; ++i) {
-        int idx = rand() % 1000;
-        sprintf(key, "thisisakey%d", idx);
+    for (i = 0; i < 70; ++i) {
+        int idx = rand() % 100;
+        sprintf(key, "key%d", idx);
         size_t len = strlen(key);
         codict_str_del(&dict, key, len);
     }
 
     printf("get data======================================\n");
     
-    for (i = 0; i < 30; ++i) {
-        int idx = rand() % 1000;
-        sprintf(key, "thisisakey%d", idx);
+    for (i = 0; i < 100; ++i) {
+        sprintf(key, "key%d", i);
         size_t len = strlen(key);
         codict_node_t *node = codict_str_get(&dict, key, len);
         if (node) {
             int val = codict_value(node, int);
             printf("%s=%d\n", key, val);
+            codict_move(&dict, node, true);
         }
     }
 
     printf("dict count=%ld\n", codict_count(&dict));
+
+    codict_node_t *node;
+    for (node = codict_begin(&dict); node != NULL; node = codict_next(node)) {
+        int val = codict_value(node, int);
+        printf(">>>>>v=%d\n", val);
+    }
 
     codict_free(&dict);
 }

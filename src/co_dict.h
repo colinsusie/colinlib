@@ -1,6 +1,10 @@
+/**
+ * 字典
+ *                  by colin
+ */
 #ifndef __CO_DICT__
 #define __CO_DICT__
-#include "co_defines.h"
+#include "co_utils.h"
 
 // 计算hash，以前判断相等性的回调
 typedef uint64_t (*copfn_hash)(const void *key, size_t size);

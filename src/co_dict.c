@@ -3,18 +3,6 @@
 #define CODICT_INIT_SIZE 61
 #define CODICT_RESIZE_RADIO 0.75
 
-// 优化的拷贝数据
-#define copy_data(dist, src, size)  \
-    do {\
-        switch (size) {\
-            case 1: *(uint8_t*)(dist)= *(uint8_t*)(src); break;\
-            case 2: *(uint16_t*)(dist)= *(uint16_t*)(src); break;\
-            case 4: *(uint32_t*)(dist)= *(uint32_t*)(src); break;\
-            case 8: *(uint64_t*)(dist)= *(uint64_t*)(src); break;\
-            default: memcpy((dist), (src), (size)); break;\
-        }\
-    } while(0)
-
 static void _check_and_resize(codict_t *dict) {
     static size_t s_bucketsizes[] = {
         61, 113, 251, 509, 1021, 2039, 4093, 8191, 16381, 
@@ -70,7 +58,7 @@ codict_node_t * codict_get(codict_t *dict, const void *key, size_t keysz) {
 codict_node_t* codict_set(codict_t *dict, const void *key, const void *val, size_t keysz, size_t valsz) {
     codict_node_t *node = codict_get(dict, key, keysz);
     if (node) {
-        copy_data(node->value, val, valsz);
+        memcpy(node->value, val, valsz);
         return node;
     }
 
@@ -83,9 +71,9 @@ codict_node_t* codict_set(codict_t *dict, const void *key, const void *val, size
     dict->buckets[idx] = node;
     node->hash = hash;
     node->key = ((char*)node + sizeof(codict_node_t));
-    copy_data(node->key, key, keysz);
+    memcpy(node->key, key, keysz);
     node->value = ((char*)node + sizeof(codict_node_t) + keysz);
-    copy_data(node->value, val, valsz);
+    memcpy(node->value, val, valsz);
     node->keysz = keysz;
     node->valsz = valsz;
 

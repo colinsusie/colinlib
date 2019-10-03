@@ -1,12 +1,11 @@
-#ifndef __CO_FALLOC__
-#define __CO_FALLOC__
 /**
  * 固定长度的内存分配器
+ *          by colin
 */
+#ifndef __CO_FALLOC__
+#define __CO_FALLOC__
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "co_utils.h"
 
 // 内存项
 typedef struct co_blockitem {

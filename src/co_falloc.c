@@ -2,7 +2,6 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
-#include "co_defines.h"
 
 #define MAX_BLOCK_SIZE 16*1024
 #define MIN_BLOCK_SIZE 4096
