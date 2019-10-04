@@ -59,10 +59,11 @@ static inline size_t codict_valsz(codict_node_t *node) { return node->valsz; }
 #define codict_key_ptr(node, type) ((type*)((node)->key))
 
 // 遍历
-#define codict_begin(dict)  (dict)->listhead
-#define codict_next(node)  (node)->listnext
-#define codict_prev(node)  (node)->listprev
-#define codict_end(dict) (dict)->listtail
+static inline codict_node_t* codict_begin(codict_t *dict) { return dict->listhead; }
+static inline codict_node_t* codict_end(codict_t *dict) { return dict->listtail; }
+static inline codict_node_t* codict_next(codict_node_t *node) { return node->listnext; }
+static inline codict_node_t* codict_prev(codict_node_t *node) { return node->listprev; }
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // 各种类型key的字典

@@ -61,11 +61,11 @@ bool covec_push_at(covec_t *vec, int index, void *data) {
     return true;
 }
 
-bool covec_push_first(covec_t *vec, void *data) {
+bool covec_push_head(covec_t *vec, void *data) {
     return covec_push_at(vec, 0, data);
 }
 
-bool covec_push_last(covec_t *vec, void *data) {
+bool covec_push_tail(covec_t *vec, void *data) {
     return covec_push_at(vec, vec->size, data);
 }
 
@@ -78,11 +78,19 @@ bool covec_get_at(covec_t *vec, int index, void *data) {
     return true;
 }
 
-bool covec_get_first(covec_t *vec, void *data) {
+void *covec_get_ptr(covec_t *vec, int index) {
+    if (index < 0)
+        index = vec->size + index;
+    if (index < 0 || index >= vec->size)
+        return NULL;
+    return (char*)vec->data + index * vec->itemsize;
+}
+
+bool covec_get_head(covec_t *vec, void *data) {
     return covec_get_at(vec, 0, data);
 }
 
-bool covec_get_last(covec_t *vec, void *data) {
+bool covec_get_tail(covec_t *vec, void *data) {
     return covec_get_at(vec, vec->size-1, data);
 }
 
@@ -95,11 +103,11 @@ bool covec_set_at(covec_t *vec, int index, const void *data) {
     return true;
 }
 
-bool covec_set_first(covec_t *vec, const void *data) {
+bool covec_set_head(covec_t *vec, const void *data) {
     return covec_set_at(vec, 0, data);
 }
 
-bool covec_set_last(covec_t *vec, const void *data) {
+bool covec_set_tail(covec_t *vec, const void *data) {
     return covec_set_at(vec, vec->size-1, data);
 }
 
@@ -118,11 +126,11 @@ bool covec_del_at(covec_t *vec, int index, void *data) {
     return true;
 }
 
-bool covec_del_first(covec_t *vec, void *data) {
+bool covec_del_head(covec_t *vec, void *data) {
     return covec_del_at(vec, 0, data);
 }
 
-bool covec_del_last(covec_t *vec, void *data) {
+bool covec_del_tail(covec_t *vec, void *data) {
     return covec_del_at(vec, vec->size-1, data);
 }
 

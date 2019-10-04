@@ -1,6 +1,6 @@
 all: test
 
-test: test_falloc test_dict test_vec test_queue
+test: test_falloc test_dict test_vec test_queue test_list
 
 test_falloc: test/test_falloc.c src/co_utils.h src/co_falloc.h src/co_falloc.c
 	gcc -g -Wall -o test_falloc test/test_falloc.c src/co_falloc.h src/co_falloc.c
@@ -13,6 +13,9 @@ test_vec: test/test_vec.c src/co_utils.h src/co_vec.h src/co_vec.c
 
 test_queue: test/test_queue.c src/co_queue.c src/co_utils.h src/co_queue.h src/co_vec.c src/co_vec.h
 	gcc -g -Wall -o test_queue test/test_queue.c src/co_queue.c src/co_vec.c
+
+test_list: test/test_list.c src/co_list.c src/co_list.h src/co_utils.h
+	gcc -g -Wall -o test_list test/test_list.c src/co_list.c
 
 .PHONY: clean
 clean:

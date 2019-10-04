@@ -7,10 +7,10 @@ int main(int argc, char const *argv[])
 
     int i, v;
     for (i = 0; i < 20; ++i) {
-        covec_push_last(&vec, &i);
+        covec_push_tail(&vec, &i);
     }
     for (i = 20; i < 40; ++i) {
-        covec_push_first(&vec, &i);
+        covec_push_head(&vec, &i);
     }
     for (i = 40; i < 60; ++i) {
         covec_push_at(&vec, -1, &i);
