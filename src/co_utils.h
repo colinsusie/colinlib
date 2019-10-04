@@ -8,15 +8,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <time.h>
-#include <sys/types.h>
-
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined (__NetBSD__)
-    #include <sys/endian.h>
-#elif defined(__APPLE__)
-    #include <machine/endian.h>
-#else
-    #include <endian.h>
-#endif
+#include "co_endian.h"
 
 // 取最小值
 #define CO_MIN(a, b) ((a) > (b) ? (b) : (a))
