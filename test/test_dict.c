@@ -38,7 +38,7 @@ void test_int_dict() {
     for (node = codict_begin(&dict); node != NULL; node = codict_next(node)) {
         int64_t key = codict_key(node, int64_t);
         mydata_t data = codict_value(node, mydata_t);
-        printf(">>>>>key=%lX, v1=%d, v2=%d\n", key, data.v1, data.v2);
+        printf(">>>>>key=%ld, v1=%d, v2=%d\n", key, data.v1, data.v2);
     }
 
     codict_free(&dict);
