@@ -8,7 +8,6 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <time.h>
-#include "co_endian.h"
 
 // 取最小值
 #define CO_MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -30,15 +29,6 @@ static inline uint32_t roundup_pow2(uint32_t size) {
     size |= size >> 8;
     size |= size >> 16;
     return ++size;
-}
-
-// 判断是否是小端字节序
-static inline bool is_little() {
-    static const union {
-        int dummy;
-        char little;
-    } host_endian = {1};
-    return host_endian.little;
 }
 
 #endif

@@ -4,13 +4,11 @@ common library for C language
 - falloc OK
 - dict OK
 - vector ok
-  - 可以直接取指针
-- queue：环形队列
-  - 可以直接取指针
-- list 链表
+- queue：环形队列 OK
+- list 链表 OK
 - buffer
-  - corb: 用于读的buffer
-  - cowb: 用于读的buffer
+  - corb: 用于读的buffer OK
+  - cowb: 用于读的buffer OK
   - cocb: 环形buffer
 - utf8
 - string

@@ -4,7 +4,16 @@
 #ifndef __CO_ENDIAN__
 #define __CO_ENDIAN__
 
-#if defined(__linux__) || defined(__CYGWIN__)
+// 判断是否是小端字节序
+static inline bool is_little_endian() {
+    static const union {
+        int dummy;
+        char little;
+    } host_endian = {1};
+    return host_endian.little;
+}
+
+#if defined(__linux__)
     #include <endian.h>
 #elif defined(__APPLE__)
     #include <libkern/OSByteOrder.h>
@@ -22,11 +31,6 @@
     #define htole64(x) OSSwapHostToLittleInt64(x)
     #define be64toh(x) OSSwapBigToHostInt64(x)
     #define le64toh(x) OSSwapLittleToHostInt64(x)
-
-    #define __BYTE_ORDER    BYTE_ORDER
-    #define __BIG_ENDIAN    BIG_ENDIAN
-    #define __LITTLE_ENDIAN LITTLE_ENDIAN
-    #define __PDP_ENDIAN    PDP_ENDIAN
 #elif defined(__OpenBSD__)
     #include <sys/endian.h>
 #elif defined(__NetBSD__) || defined(__FreeBSD__)
@@ -40,5 +44,73 @@
 #else
     #error platform not supported
 #endif
+
+typedef union floattype {
+  float f;
+  double d;
+  char buff[8];
+} floattype_t;
+
+static inline void _swap_float(char *dest, const char *src, int size) {
+    dest += size - 1;
+    while (size-- != 0)
+      *(dest--) = *(src++);
+}
+
+static inline float htole32f(float v) {
+    if (is_little_endian()) {
+        return v;
+    } else {
+        floattype_t f;
+        _swap_float(f.buff, (char*)&v, sizeof(float));
+        return f.f; 
+    }
+}
+
+static inline float htobe32f(float v) {
+    if (!is_little_endian()) {
+        return v;
+    } else {
+        floattype_t f;
+        _swap_float(f.buff, (char*)&v, sizeof(float));
+        return f.f; 
+    }
+}
+
+static inline double htole64f(double v) {
+    if (is_little_endian()) {
+        return v;
+    } else {
+        floattype_t f;
+        _swap_float(f.buff, (char*)&v, sizeof(double));
+        return f.d; 
+    }
+}
+
+static inline double htobe64f(double v) {
+    if (!is_little_endian()) {
+        return v;
+    } else {
+        floattype_t f;
+        _swap_float(f.buff, (char*)&v, sizeof(double));
+        return f.d; 
+    }
+}
+
+static inline float le32tohf(float v) {
+    return htole32f(v);
+}
+
+static inline double be32tohf(double v) {
+    return htobe32f(v);
+}
+
+static inline float le64tohf(float v) {
+    return htole64f(v);
+}
+
+static inline double be64tohf(double v) {
+    return htobe64f(v);
+}
 
 #endif
