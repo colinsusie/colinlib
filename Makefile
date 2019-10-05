@@ -1,6 +1,7 @@
 all: test
 
-test: test_falloc test_dict test_vec test_queue test_list test_buffer
+test: test_falloc test_dict test_vec test_queue test_list test_buffer \
+	test_utf8
 
 test_falloc: test/test_falloc.c src/co_utils.h src/co_falloc.h src/co_falloc.c
 	gcc -g -Wall -o test_falloc test/test_falloc.c src/co_falloc.c
@@ -19,6 +20,9 @@ test_list: test/test_list.c src/co_list.c src/co_list.h src/co_utils.h
 
 test_buffer: test/test_buffer.c src/co_buffer.c src/co_buffer.h src/co_utils.h src/co_endian.h
 	gcc -g -Wall -o test_buffer test/test_buffer.c src/co_buffer.c
+
+test_utf8: test/test_utf8.c src/co_utf8.c src/co_utf8.h src/co_utils.h
+	gcc -g -Wall -o test_utf8 test/test_utf8.c src/co_utf8.c
 
 .PHONY: clean
 clean:
