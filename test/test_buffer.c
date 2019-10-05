@@ -79,9 +79,58 @@ void test_read_write() {
     cowb_free(&wb);
 }
 
+void test_circle_buffer() {
+    cocb_t cb;
+    cocb_init(&cb, 64);
+
+    char *str = "helloworldhelloworldhelloworldhelloworldhelloworld";
+    int len = strlen(str);
+    cocb_write(&cb, str, len);
+    cocb_write(&cb, str, len);
+    cocb_write(&cb, str, len);
+
+    char str2[19] = {0};
+    while (1) {
+        int n = cocb_read(&cb, str2, 18);
+        printf(">>>>>>%s\n", str2);
+        if (n < 18) break;
+    }
+
+    cocb_free(&cb);
+}
+
+void test_circle_buffer2() {
+    cocb_t cb;
+    cocb_init(&cb, 64);
+    char *str = "helloworldhelloworldhelloworldhelloworldhelloworld";
+    int len = strlen(str);
+    char str2[50] = {0};
+    cocb_write(&cb, str, len);
+    cocb_write(&cb, str, len);
+    cocb_read(&cb, str2, 50);
+    cocb_read(&cb, str2, 50);
+    cocb_write(&cb, str, len);
+
+    printf("readable=%d, head=%d, tail=%d\n", cocb_readable_size(&cb), cb.head, cb.tail);
+
+    while (cocb_readable_size(&cb)) {
+        int readonce = cocb_readonce_size(&cb);
+        void *buffer = cocb_head(&cb);
+        // 比如用于socket write
+        (void)buffer;
+        // comsume buffer ...
+        printf("comsume buffer: %d\n", readonce);
+        cocb_consume_size(&cb, readonce);
+    }
+
+    cocb_free(&cb);
+}
+
 int main(int argc, char const *argv[])
 {
     test_endian();
     test_read_write();
+    test_circle_buffer();
+    test_circle_buffer2();
     return 0;
 }

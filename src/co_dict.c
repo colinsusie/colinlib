@@ -21,7 +21,7 @@ static void _check_and_resize(codict_t *dict) {
         }
         dict->cap = cap;
         free(dict->buckets);
-        dict->buckets = calloc(cap, sizeof(codict_node_t*));
+        dict->buckets = CO_CALLOC(cap, sizeof(codict_node_t*));
         codict_node_t *curr = dict->listhead;
         while (curr) {
             size_t idx = curr->hash % cap;
@@ -66,7 +66,7 @@ codict_node_t* codict_set(codict_t *dict, const void *key, const void *val, size
 
     uint64_t hash = dict->fn_hash(key, keysz);
     size_t idx = hash % dict->cap;
-    node = malloc(sizeof(codict_node_t) + keysz + valsz);
+    node = CO_MALLOC(sizeof(codict_node_t) + keysz + valsz);
     node->next = dict->buckets[idx];
     dict->buckets[idx] = node;
     node->hash = hash;

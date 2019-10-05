@@ -26,7 +26,7 @@ void co_falloc_free(co_falloc_t *alloc) {
 void* co_falloc_newitem(co_falloc_t *alloc) {
     if (!alloc->freeitem) {
         // printf("new block\n");
-        co_memblock_t *block = malloc(alloc->blocksize);
+        co_memblock_t *block = CO_MALLOC(alloc->blocksize);
         block->next = alloc->memblock;
         alloc->memblock = block;
         int idx = 0;

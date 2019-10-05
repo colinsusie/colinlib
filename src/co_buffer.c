@@ -157,7 +157,7 @@ bool corb_read_buffer(corb_t *rb, void *buffer, int size) {
 
 void cowb_init(cowb_t *wb, int initsize, cb_endian_t endian) {
     assert(initsize > 0);
-    wb->buffer = malloc(initsize);
+    wb->buffer = CO_MALLOC(initsize);
     wb->size = initsize;
     wb->pos = 0;
     wb->endian = endian;
@@ -177,10 +177,10 @@ int cowb_seek(cowb_t *wb, bool abs, int pos) {
     return wb->pos;
 }
 
-static inline void _check_and_grow(cowb_t *wb, int size) {
+static inline void _wb_check_and_grow(cowb_t *wb, int size) {
     if (wb->pos + size > wb->size) {
         int newsize = CO_MAX(wb->pos + size, wb->size * 2);
-        wb->buffer = realloc(wb->buffer, newsize);
+        wb->buffer = CO_REALLOC(wb->buffer, newsize);
         wb->size = newsize;
     }
 }
@@ -258,7 +258,81 @@ void cowb_write_float64(cowb_t *wb, double v) {
 }
 
 void cowb_write_buffer(cowb_t *wb, void *buffer, int size) {
-    _check_and_grow(wb, size);
+    _wb_check_and_grow(wb, size);
     memcpy((char*)wb->buffer+wb->pos, buffer, size);
     wb->pos += size;
+}
+
+void cocb_init(cocb_t *cb, int initsize) {
+    cb->size = initsize;
+    cb->head = 0;
+    cb->tail = 0;
+    cb->buffer = CO_MALLOC(initsize);
+}
+
+void cocb_free(cocb_t *cb) {
+    free(cb->buffer);
+}
+
+int cocb_read(cocb_t *cb, void *buffer, int size) {
+    int readable = cocb_readable_size(cb);
+    size = readable >= size ? size : readable;
+    int readonce = cocb_readonce_size(cb);
+    int len = CO_MIN(size, readonce);
+    memcpy(buffer, (uint8_t*)cb->buffer + cb->head, len);
+    if (size > len)
+        memcpy((uint8_t*)buffer + len, cb->buffer, size-len);
+    cb->head = (cb->head + size) % cb->size;
+    return size;
+}
+
+static inline void _cb_check_and_grow(cocb_t *cb, int size) {
+    int readable = cocb_readable_size(cb);
+    int writable = cb->size - readable;
+    if (writable <= size) {
+        int newsize = CO_MAX(cb->size * 2, readable + size + 1);
+        cb->buffer = CO_REALLOC(cb->buffer, newsize);
+        if (cb->tail < cb->head) {
+            int readonce = cocb_readonce_size(cb);
+            memmove((uint8_t*)cb->buffer + newsize - readonce, (uint8_t*)cb->buffer + cb->head, readonce);
+            cb->head = newsize - readonce;
+        }
+        cb->size = newsize;
+    }
+}
+
+void cocb_write(cocb_t *cb, const void *buffer, int size) {
+    _cb_check_and_grow(cb, size);
+    int len = CO_MIN(size, cb->size - cb->tail);
+    memcpy((uint8_t*)cb->buffer + cb->tail, buffer, len);
+    if (size > len)
+        memcpy((uint8_t*)cb->buffer, (uint8_t*)buffer + len, size - len);
+    cb->tail = (cb->tail + size) % cb->size;
+}
+
+void *cocb_head(cocb_t *cb) {
+    return (uint8_t*)cb->buffer + cb->head;
+}
+
+int cocb_readable_size(cocb_t *cb) {
+    if (cb->tail >= cb->head)
+        return cb->tail - cb->head;
+    else
+        return cb->size - (cb->head - cb->tail);
+}
+
+int cocb_readonce_size(cocb_t *cb) {
+    if (cb->tail >= cb->head)
+        return cb->tail - cb->head;
+    else
+        return cb->size - cb->head;
+}
+
+bool cocb_consume_size(cocb_t *cb, int size) {
+    int readable = cocb_readable_size(cb);
+    if (readable >= size) {
+        cb->head = (cb->head + size) % cb->size;
+        return true;
+    }
+    return false;
 }

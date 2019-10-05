@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <time.h>
+#include "co_alloc.h"
 
 // 取最小值
 #define CO_MIN(a, b) ((a) > (b) ? (b) : (a))

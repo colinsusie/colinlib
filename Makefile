@@ -17,7 +17,7 @@ test_queue: test/test_queue.c src/co_queue.c src/co_utils.h src/co_queue.h src/c
 test_list: test/test_list.c src/co_list.c src/co_list.h src/co_utils.h
 	gcc -g -Wall -o test_list test/test_list.c src/co_list.c
 
-test_buffer: test/test_buffer.c src/co_buffer.c src/co_buffer.h src/co_utils.h
+test_buffer: test/test_buffer.c src/co_buffer.c src/co_buffer.h src/co_utils.h src/co_endian.h
 	gcc -g -Wall -o test_buffer test/test_buffer.c src/co_buffer.c
 
 .PHONY: clean

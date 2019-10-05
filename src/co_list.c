@@ -19,7 +19,7 @@ void colist_free(colist_t *list) {
 }
 
 void colist_push_head(colist_t *list, const void *data) {
-    colist_node_t *node = malloc(list->itemsize);
+    colist_node_t *node = CO_MALLOC(list->itemsize);
     memset(node, 0, sizeof(colist_node_t));
     memcpy((char*)node + sizeof(colist_node_t), data, list->itemsize);
     if (!list->head) {
@@ -32,7 +32,7 @@ void colist_push_head(colist_t *list, const void *data) {
 }
 
 void colist_push_tail(colist_t *list, const void *data) {
-    colist_node_t *node = malloc(list->itemsize);
+    colist_node_t *node = CO_MALLOC(list->itemsize);
     memset(node, 0, sizeof(colist_node_t));
     memcpy((char*)node + sizeof(colist_node_t), data, list->itemsize);
     if (!list->tail) {
@@ -46,7 +46,7 @@ void colist_push_tail(colist_t *list, const void *data) {
 
 void colist_push_at(colist_t *list, colist_node_t *node, const void *data, bool before) {
     assert(node);
-    colist_node_t *newnode = malloc(list->itemsize);
+    colist_node_t *newnode = CO_MALLOC(list->itemsize);
     memset(newnode, 0, sizeof(colist_node_t));
     memcpy((char*)newnode + sizeof(colist_node_t), data, list->itemsize);
     if (before) {

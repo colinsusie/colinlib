@@ -33,7 +33,7 @@ void covec_resize(covec_t *vec, int size) {
     if (vec->cap >= size) {
         vec->size = size;
     } else {
-        vec->data = realloc(vec->data, size*vec->itemsize);
+        vec->data = CO_REALLOC(vec->data, size*vec->itemsize);
         vec->cap = size;
         vec->size = size;
     }
@@ -41,7 +41,7 @@ void covec_resize(covec_t *vec, int size) {
 
 void covec_growcap(covec_t *vec, int cap) {
     if (cap > vec->cap) {
-        vec->data = realloc(vec->data, cap*vec->itemsize);
+        vec->data = CO_REALLOC(vec->data, cap*vec->itemsize);
         vec->cap = cap;
     }
 }
@@ -147,8 +147,8 @@ void covec_move(covec_t *vec, int from, int to, int count) {
 
 void covec_swap(covec_t *vec, int idx1, int idx2) {
     uint8_t data1[32], data2[32];
-    uint8_t *ptr1 = vec->itemsize <= 32 ? data1 : malloc(vec->itemsize);
-    uint8_t *ptr2 = vec->itemsize <= 32 ? data2 : malloc(vec->itemsize);
+    uint8_t *ptr1 = vec->itemsize <= 32 ? data1 : CO_MALLOC(vec->itemsize);
+    uint8_t *ptr2 = vec->itemsize <= 32 ? data2 : CO_MALLOC(vec->itemsize);
     if (covec_get_at(vec, idx1, ptr1) && covec_get_at(vec, idx2, ptr2)) {
         covec_set_at(vec, idx1, ptr2);
         covec_set_at(vec, idx2, ptr1);

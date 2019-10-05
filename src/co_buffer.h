@@ -1,5 +1,5 @@
 /**
- * 各种buffer
+ * 各种类型的buffer
  *                  by colin
  */
 #ifndef __CO_BUFFER__
@@ -81,5 +81,31 @@ void cowb_write_uint64(cowb_t *wb, uint64_t v);
 void cowb_write_float32(cowb_t *wb, float v);
 void cowb_write_float64(cowb_t *wb, double v);
 void cowb_write_buffer(cowb_t *wb, void *buffer, int size);
+
+///////////////////////////////////////////////////////////////////////////////////
+// 圆形buffer: 用于生产者/消费者模式下的buffer，自增长
+
+typedef struct cocb {
+    void *buffer;
+    int size;
+    int head;
+    int tail;
+} cocb_t;
+
+// 初始化和释放circle buffer
+void cocb_init(cocb_t *cb, int initsize);
+void cocb_free(cocb_t *cb);
+// 读buffer，返回实际读到的buffer大小
+int cocb_read(cocb_t *cb, void *buffer, int size);
+// 写buffer
+void cocb_write(cocb_t *cb, const void *buffer, int size);
+// 取缓冲的头
+void *cocb_head(cocb_t *cb);
+// 还剩多少可以读
+int cocb_readable_size(cocb_t *cb);
+// 可读一次连续的内存的大小
+int cocb_readonce_size(cocb_t *cb);
+// 消耗了多少内存
+bool cocb_consume_size(cocb_t *cb, int size);
 
 #endif
