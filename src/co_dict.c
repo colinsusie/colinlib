@@ -20,7 +20,7 @@ static void _check_and_resize(codict_t *dict) {
             }
         }
         dict->cap = cap;
-        free(dict->buckets);
+        CO_FREE(dict->buckets);
         dict->buckets = CO_CALLOC(cap, sizeof(codict_node_t*));
         codict_node_t *curr = dict->listhead;
         while (curr) {
@@ -115,7 +115,7 @@ bool codict_del(codict_t *dict, const void *key, size_t keysz) {
     if (curr->listnext)
         curr->listnext->listprev = curr->listprev;
 
-    free(curr);
+    CO_FREE(curr);
     dict->count--;
     return true;
 }
@@ -127,7 +127,7 @@ void codict_clear(codict_t *dict) {
         e = dict->buckets[i];
         while (e) {
             t = e->next;
-            free(e);
+            CO_FREE(e);
             e = t;
         }
         dict->buckets[i] = NULL;
@@ -138,7 +138,7 @@ void codict_clear(codict_t *dict) {
 
 void codict_free(codict_t *dict) {
     codict_clear(dict);
-    free(dict->buckets);
+    CO_FREE(dict->buckets);
 }
 
 void codict_move(codict_t *dict, codict_node_t *node, bool head) {

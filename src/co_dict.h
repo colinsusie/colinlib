@@ -6,6 +6,10 @@
 #define __CO_DICT__
 #include "co_utils.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // 计算hash，以前判断相等性的回调
 typedef uint64_t (*copfn_hash)(const void *key, size_t size);
 typedef int (*copfn_equal)(const void *key1, const void *key2, size_t sz1, size_t sz2);
@@ -102,5 +106,9 @@ static inline codict_node_t* codict_ptr_set(codict_t *dict, const void *key, con
 static inline bool codict_ptr_del(codict_t *dict, const void *key) {
     return codict_del(dict, &key, sizeof(void*));
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

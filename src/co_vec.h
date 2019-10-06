@@ -6,6 +6,10 @@
 #define __CO_VEC__
 #include "co_utils.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // 向量结构 
 typedef struct covec {
     void * data;            // 数据
@@ -66,4 +70,7 @@ void covec_move(covec_t *vec, int from, int to, int count);
 // 交换两个元素
 void covec_swap(covec_t *vec, int idx1, int idx2);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

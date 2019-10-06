@@ -21,7 +21,7 @@ void covec_free(covec_t *vec) {
 }
 
 void covec_clear(covec_t *vec) {
-    free(vec->data);
+    CO_FREE(vec->data);
     vec->data = NULL;
     vec->cap = 0;
     vec->size = 0;
@@ -153,6 +153,6 @@ void covec_swap(covec_t *vec, int idx1, int idx2) {
         covec_set_at(vec, idx1, ptr2);
         covec_set_at(vec, idx2, ptr1);
     }
-    if (ptr1 != data1) free(ptr1);
-    if (ptr2 != data2) free(ptr2);
+    if (ptr1 != data1) CO_FREE(ptr1);
+    if (ptr2 != data2) CO_FREE(ptr2);
 }

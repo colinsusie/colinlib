@@ -4,6 +4,10 @@
 #ifndef __CO_ENDIAN__
 #define __CO_ENDIAN__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // 判断是否是小端字节序
 static inline bool is_little_endian() {
     static const union {
@@ -113,4 +117,8 @@ static inline double be64tohf(double v) {
     return htobe64f(v);
 }
 
+
+#ifdef __cplusplus
+}
+#endif
 #endif

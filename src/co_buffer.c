@@ -164,7 +164,7 @@ void cowb_init(cowb_t *wb, int initsize, cb_endian_t endian) {
 }
 
 void cowb_free(cowb_t *wb) {
-    free(wb->buffer);
+    CO_FREE(wb->buffer);
 }
 
 int cowb_seek(cowb_t *wb, bool abs, int pos) {
@@ -271,7 +271,7 @@ void cocb_init(cocb_t *cb, int initsize) {
 }
 
 void cocb_free(cocb_t *cb) {
-    free(cb->buffer);
+    CO_FREE(cb->buffer);
 }
 
 int cocb_read(cocb_t *cb, void *buffer, int size) {

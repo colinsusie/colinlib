@@ -18,7 +18,7 @@ void co_falloc_free(co_falloc_t *alloc) {
     co_memblock_t *block = alloc->memblock;
     while (block) {
         co_memblock_t *temp = block->next;
-        free(block);
+        CO_FREE(block);
         block = temp;
     }
 }

@@ -8,7 +8,12 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <time.h>
+#include <stdarg.h>
 #include "co_alloc.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // 取最小值
 #define CO_MIN(a, b) ((a) > (b) ? (b) : (a))
@@ -32,4 +37,7 @@ static inline uint32_t roundup_pow2(uint32_t size) {
     return ++size;
 }
 
+#ifdef __cplusplus
+}
+#endif
 #endif

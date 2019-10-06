@@ -5,6 +5,9 @@
 #ifndef __CO_LIST__
 #define __CO_LIST__
 #include "co_utils.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // 链表结点
 typedef struct colist_node {
@@ -48,4 +51,7 @@ static inline void* colist_getptr(colist_t *list, colist_node_t *node) {
     return (char*)node + sizeof(colist_node_t);
 }
 
+#ifdef __cplusplus
+}
+#endif
 #endif

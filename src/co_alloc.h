@@ -5,8 +5,16 @@
 #define __CO_ALLOC__
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define CO_MALLOC malloc
 #define CO_CALLOC calloc
 #define CO_REALLOC realloc
+#define CO_FREE free
 
+#ifdef __cplusplus
+}
+#endif
 #endif

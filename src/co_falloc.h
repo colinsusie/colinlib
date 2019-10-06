@@ -4,6 +4,9 @@
 */
 #ifndef __CO_FALLOC__
 #define __CO_FALLOC__
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "co_utils.h"
 
@@ -39,4 +42,7 @@ bool co_falloc_freeitem(co_falloc_t *alloc, void *item);
 // 判断内存项是否已经释放 
 bool co_falloc_isfree(co_falloc_t *alloc, void *item);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

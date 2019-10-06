@@ -7,6 +7,10 @@
 #include "co_utils.h"
 #include "co_vec.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // 队列结构
 typedef struct coqueue {
     covec_t vec;        // 向量
@@ -27,4 +31,7 @@ bool coqueue_pop(coqueue_t *queue, void *data);
 // 取某个元素，0表示第1个，-1表示最后一个
 bool coqueue_peek(coqueue_t *queue, int index, void *data);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

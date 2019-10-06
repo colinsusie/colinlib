@@ -11,7 +11,7 @@ void colist_free(colist_t *list) {
     colist_node_t *temp;
     while (node) {
         temp = node->next;
-        free(node);
+        CO_FREE(node);
         node = temp;
     }
     list->head = NULL;
@@ -95,6 +95,6 @@ bool colist_pop_at(colist_t *list, colist_node_t *node, void *data) {
         node->next->prev = node->prev;
     if (data)
         colist_getvalue(list, node, data);
-    free(node);
+    CO_FREE(node);
     return true;
 }

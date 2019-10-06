@@ -6,6 +6,10 @@
 #define __CO_BUFFER__
 #include "co_utils.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // 字节序
 typedef enum cb_endian {
     CB_EN_NATIVE,       // 主机序
@@ -107,5 +111,9 @@ int cocb_readable_size(cocb_t *cb);
 int cocb_readonce_size(cocb_t *cb);
 // 消耗了多少内存
 bool cocb_consume_size(cocb_t *cb, int size);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
