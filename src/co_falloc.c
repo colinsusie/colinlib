@@ -8,13 +8,13 @@
 #define MIN_ITEM_SIZE sizeof(co_blockitem_t)
 #define FREE_FLAG 0xC0C0C0C0
 
-void co_falloc_init(co_falloc_t *alloc, uint32_t blocksize, uint32_t itemsize) {
+void cofalloc_init(cofalloc_t *alloc, uint32_t blocksize, uint32_t itemsize) {
     memset(alloc, 0, sizeof(*alloc));
     alloc->blocksize = CO_CLAMP(blocksize, MIN_BLOCK_SIZE, MAX_BLOCK_SIZE);
     alloc->itemsize = CO_MAX(MIN_ITEM_SIZE, itemsize); 
 }
 
-void co_falloc_free(co_falloc_t *alloc) {
+void cofalloc_free(cofalloc_t *alloc) {
     co_memblock_t *block = alloc->memblock;
     while (block) {
         co_memblock_t *temp = block->next;
@@ -23,7 +23,7 @@ void co_falloc_free(co_falloc_t *alloc) {
     }
 }
 
-void* co_falloc_newitem(co_falloc_t *alloc) {
+void* cofalloc_newitem(cofalloc_t *alloc) {
     if (!alloc->freeitem) {
         // printf("new block\n");
         co_memblock_t *block = CO_MALLOC(alloc->blocksize);
@@ -45,7 +45,7 @@ void* co_falloc_newitem(co_falloc_t *alloc) {
     return item;
 }
 
-bool co_falloc_freeitem(co_falloc_t *alloc, void *item) {
+bool cofalloc_freeitem(cofalloc_t *alloc, void *item) {
     co_blockitem_t *bitem = (co_blockitem_t *)item;
     if (bitem->flag == FREE_FLAG)
         return false;
@@ -55,7 +55,7 @@ bool co_falloc_freeitem(co_falloc_t *alloc, void *item) {
     return true;
 }
 
-bool co_falloc_isfree(co_falloc_t *alloc, void *item) {
+bool cofalloc_isfree(cofalloc_t *alloc, void *item) {
     co_blockitem_t *bitem = (co_blockitem_t *)item;
     return bitem->flag == FREE_FLAG;
 }

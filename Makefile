@@ -1,7 +1,7 @@
 all: test
 
 test: test_falloc test_dict test_vec test_queue test_list test_buffer \
-	test_utf8
+	test_utf8 test_timingwheel test_timerservice test_coroutine
 
 test_falloc: test/test_falloc.c src/co_utils.h src/co_falloc.h src/co_falloc.c
 	gcc -g -Wall -o test_falloc test/test_falloc.c src/co_falloc.c
@@ -23,6 +23,17 @@ test_buffer: test/test_buffer.c src/co_buffer.c src/co_buffer.h src/co_utils.h s
 
 test_utf8: test/test_utf8.c src/co_utf8.c src/co_utf8.h src/co_utils.h
 	gcc -g -Wall -o test_utf8 test/test_utf8.c src/co_utf8.c
+
+test_timingwheel: test/test_timingwheel.c src/co_timingwheel.c src/co_timingwheel.h src/co_utils.h src/co_clink.h
+	gcc -g -Wall -o test_timingwheel test/test_timingwheel.c src/co_timingwheel.c
+
+test_timerservice: test/test_timerservice.c src/co_timerservice.c src/co_timerservice.h src/co_timingwheel.c \
+	src/co_timingwheel.h src/co_utils.h src/co_clink.h src/co_falloc.c src/co_falloc.h
+	gcc -g -Wall -o test_timerservice test/test_timerservice.c src/co_timerservice.c src/co_timingwheel.c src/co_falloc.c
+
+test_coroutine: test/test_coroutine.c src/co_routine.c src/co_routine.h src/co_ctx.c src/co_ctx.h src/coctx_swap.S src/co_utils.h
+	gcc -g -Wall -o test_coroutine test/test_coroutine.c src/co_routine.c src/co_ctx.c src/coctx_swap.S
+
 
 .PHONY: clean
 clean:
