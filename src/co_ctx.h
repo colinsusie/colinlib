@@ -19,7 +19,7 @@ typedef struct {
 typedef void (*coctx_func_t)(uint32_t p1, uint32_t p2);
 
 extern int coctx_make(coctx_t *ctx, coctx_func_t fn, uint32_t p1, uint32_t p2);
-extern int coctx_swap(coctx_t *octx, coctx_t *ctx);
+extern int coctx_swap(coctx_t *octx, coctx_t *ctx) asm("coctx_swap");
 
 #ifdef __cplusplus
 }
