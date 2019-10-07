@@ -1,12 +1,14 @@
 #include "co_list.h"
 
-void colist_init(colist_t *list, uint16_t itemsize) {
+colist_t* colist_new(uint16_t itemsize) {
+    colist_t *list = CO_MALLOC(sizeof(*list));
     list->head = NULL;
     list->tail = NULL;
     list->itemsize = itemsize;
+    return list;
 }
 
-void colist_free(colist_t *list) {
+void* colist_free(colist_t *list) {
     colist_node_t *node = list->head;
     colist_node_t *temp;
     while (node) {
@@ -16,6 +18,8 @@ void colist_free(colist_t *list) {
     }
     list->head = NULL;
     list->tail = NULL;
+    CO_FREE(list);
+    return NULL;
 }
 
 void colist_push_head(colist_t *list, const void *data) {

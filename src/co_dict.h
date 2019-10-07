@@ -37,9 +37,9 @@ typedef struct codict {
 } codict_t;
 
 // 初始化字典
-void codict_init(codict_t *dict, copfn_hash fn_hash, copfn_equal fn_equal);
+codict_t* codict_new(copfn_hash fn_hash, copfn_equal fn_equal);
 // 释放字典
-void codict_free(codict_t *dict);
+void* codict_free(codict_t *dict);
 // 取结点
 codict_node_t* codict_get(codict_t *dict, const void *key, size_t keysz);
 // 设值
@@ -72,7 +72,7 @@ static inline codict_node_t* codict_prev(codict_node_t *node) { return node->lis
 ////////////////////////////////////////////////////////////////////////////////
 // 各种类型key的字典
 // str or memory block
-void codict_str(codict_t *dict);
+codict_t* codict_str();
 static inline codict_node_t* codict_str_get(codict_t *dict, const char *key, size_t len) {
     return codict_get(dict, key, len);
 }
@@ -84,7 +84,7 @@ static inline bool codict_str_del(codict_t *dict, const char *key, size_t len) {
 }
 
 // int64
-void codict_int(codict_t *dict);
+codict_t* codict_int();
 static inline codict_node_t* codict_int_get(codict_t *dict, int64_t key) {
     return codict_get(dict, &key, sizeof(int64_t));
 }
@@ -96,7 +96,7 @@ static inline bool codict_int_del(codict_t *dict, int64_t key) {
 }
 
 // ptr
-void codict_ptr(codict_t *dict);
+codict_t* codict_ptr();
 static inline codict_node_t* codict_ptr_get(codict_t *dict, const void *key) {
     return codict_get(dict, &key, sizeof(void*));
 }

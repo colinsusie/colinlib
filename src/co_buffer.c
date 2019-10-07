@@ -1,6 +1,8 @@
 #include "co_buffer.h"
 #include "co_endian.h"
 
+#define MIN_BUFF_SIZE 32
+
 void coprintfbuffer(const void *buffer, int size, int blocksize) {
     int i, j;
     int p = 0;
@@ -20,318 +22,310 @@ void coprintfbuffer(const void *buffer, int size, int blocksize) {
     }
 }
 
-void corb_attach(corb_t *rb, void *buffer, int size, cb_endian_t endian) {
-    rb->buffer = buffer;
-    rb->size = size;
-    rb->pos = 0;
-    rb->endian = endian;
+cobuffer_t* cobuffer_new(const char *buffer, int bufsz, cb_endian_t endian) {
+    cobuffer_t* bf = CO_MALLOC(sizeof(*bf));
+    int size = CO_MAX(bufsz, MIN_BUFF_SIZE);
+    bf->buffer = CO_MALLOC(size);
+    bf->size = size;
+    bf->pos = 0;
+    bf->endian = endian;
+    if (buffer && bufsz)
+        cobuffer_write(bf, buffer, bufsz);
+    return bf;
 }
 
-int corb_seek(corb_t *rb, bool abs, int pos) {
+void* cobuffer_free(cobuffer_t *bf) {
+    CO_FREE(bf->buffer);
+    CO_FREE(bf);
+    return NULL;
+}
+
+int cobuffer_seek(cobuffer_t *bf, bool abs, int pos) {
     if (!abs)
-        pos += rb->pos;
+        pos += bf->pos;
     else if (pos < 0)
-        pos = rb->size - pos;
-    if (pos >= 0 && pos < rb->size)
-        rb->pos = pos;
-    return rb->pos;
+        pos = bf->size - pos;
+    bf->pos = CO_CLAMP(pos, 0, bf->size-1);
+    return bf->pos;
 }
 
-int8_t corb_read_int8(corb_t *rb, bool *succ) {
+int8_t cobuffer_read_int8(cobuffer_t *bf, bool *succ) {
     int8_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(int8_t));
+    *succ = cobuffer_read(bf, &v, sizeof(int8_t));
     return v;
 }
 
-uint8_t corb_read_uint8(corb_t *rb, bool *succ) {
+uint8_t cobuffer_read_uint8(cobuffer_t *bf, bool *succ) {
     uint8_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(uint8_t));
+    *succ = cobuffer_read(bf, &v, sizeof(uint8_t));
     return v;
 }
 
-int16_t corb_read_int16(corb_t *rb, bool *succ) {
+int16_t cobuffer_read_int16(cobuffer_t *bf, bool *succ) {
     int16_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(int16_t));
+    *succ = cobuffer_read(bf, &v, sizeof(int16_t));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le16toh(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be16toh(v);
     }
     return v;
 }
 
-uint16_t corb_read_uint16(corb_t *rb, bool *succ) {
+uint16_t cobuffer_read_uint16(cobuffer_t *bf, bool *succ) {
     uint16_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(uint16_t));
+    *succ = cobuffer_read(bf, &v, sizeof(uint16_t));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le16toh(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be16toh(v);
     }
     return v;
 }
 
-int32_t corb_read_int32(corb_t *rb, bool *succ) {
+int32_t cobuffer_read_int32(cobuffer_t *bf, bool *succ) {
     int32_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(int32_t));
+    *succ = cobuffer_read(bf, &v, sizeof(int32_t));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le32toh(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be32toh(v);
     }
     return v;
 }
 
-uint32_t corb_read_uint32(corb_t *rb, bool *succ) {
+uint32_t cobuffer_read_uint32(cobuffer_t *bf, bool *succ) {
     uint32_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(uint32_t));
+    *succ = cobuffer_read(bf, &v, sizeof(uint32_t));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le32toh(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be32toh(v);
     }
     return v;
 }
 
-int64_t corb_read_int64(corb_t *rb, bool *succ) {
+int64_t cobuffer_read_int64(cobuffer_t *bf, bool *succ) {
     int64_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(int64_t));
+    *succ = cobuffer_read(bf, &v, sizeof(int64_t));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le64toh(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be64toh(v);
     }
     return v;
 
 }
 
-uint64_t corb_read_uint64(corb_t *rb, bool *succ) {
+uint64_t cobuffer_read_uint64(cobuffer_t *bf, bool *succ) {
     uint64_t v;
-    *succ = corb_read_buffer(rb, &v, sizeof(uint64_t));
+    *succ = cobuffer_read(bf, &v, sizeof(uint64_t));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le64toh(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be64toh(v);
     }
     return v;
 }
 
-float corb_read_float32(corb_t *rb, bool *succ) {
+float cobuffer_read_float32(cobuffer_t *bf, bool *succ) {
     float v;
-    *succ = corb_read_buffer(rb, &v, sizeof(float));
+    *succ = cobuffer_read(bf, &v, sizeof(float));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le32tohf(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be32tohf(v);
     }
     return v;
 }
 
-double corb_read_float64(corb_t *rb, bool *succ) {
+double cobuffer_read_float64(cobuffer_t *bf, bool *succ) {
     double v;
-    *succ = corb_read_buffer(rb, &v, sizeof(double));
+    *succ = cobuffer_read(bf, &v, sizeof(double));
     if (*succ) {
-        if (rb->endian == CB_EN_LITTLE)
+        if (bf->endian == CB_EN_LITTLE)
             v = le64tohf(v);
-        else if (rb->endian == CB_EN_BIG)
+        else if (bf->endian == CB_EN_BIG)
             v = be64tohf(v);
     }
     return v;
 }
 
-bool corb_read_buffer(corb_t *rb, void *buffer, int size) {
-    if (rb->pos + size <= rb->size) {
-        memcpy(buffer, (char*)rb->buffer+rb->pos, size);
-        rb->pos += size;
+bool cobuffer_read(cobuffer_t *bf, void *buffer, int size) {
+    if (bf->pos + size <= bf->size) {
+        memcpy(buffer, (char*)bf->buffer+bf->pos, size);
+        bf->pos += size;
         return true;
     }
     return false;
 }
 
-void cowb_init(cowb_t *wb, int initsize, cb_endian_t endian) {
-    assert(initsize > 0);
-    wb->buffer = CO_MALLOC(initsize);
-    wb->size = initsize;
-    wb->pos = 0;
-    wb->endian = endian;
-}
-
-void cowb_free(cowb_t *wb) {
-    CO_FREE(wb->buffer);
-}
-
-int cowb_seek(cowb_t *wb, bool abs, int pos) {
-    if (!abs)
-        pos += wb->pos;
-    else if (pos < 0)
-        pos = wb->size - pos;
-    if (pos >= 0 && pos < wb->size)
-        wb->pos = pos;
-    return wb->pos;
-}
-
-static inline void _wb_check_and_grow(cowb_t *wb, int size) {
-    if (wb->pos + size > wb->size) {
-        int newsize = CO_MAX(wb->pos + size, wb->size * 2);
-        wb->buffer = CO_REALLOC(wb->buffer, newsize);
-        wb->size = newsize;
+static inline void _wb_check_and_grow(cobuffer_t *bf, int size) {
+    if (bf->pos + size > bf->size) {
+        int newsize = CO_MAX(bf->pos + size, bf->size * 2);
+        bf->buffer = CO_REALLOC(bf->buffer, newsize);
+        bf->size = newsize;
     }
 }
 
-void cowb_write_int8(cowb_t *wb, int8_t v) {
-    cowb_write_buffer(wb, &v, sizeof(int8_t));
+void cobuffer_write_int8(cobuffer_t *bf, int8_t v) {
+    cobuffer_write(bf, &v, sizeof(int8_t));
 }
 
-void cowb_write_uint8(cowb_t *wb, uint8_t v) {
-    cowb_write_buffer(wb, &v, sizeof(uint8_t));
+void cobuffer_write_uint8(cobuffer_t *bf, uint8_t v) {
+    cobuffer_write(bf, &v, sizeof(uint8_t));
 }
 
-void cowb_write_int16(cowb_t *wb, int16_t v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_int16(cobuffer_t *bf, int16_t v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole16(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe16(v);
-    cowb_write_buffer(wb, &v, sizeof(int16_t));
+    cobuffer_write(bf, &v, sizeof(int16_t));
 }
 
-void cowb_write_uint16(cowb_t *wb, uint16_t v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_uint16(cobuffer_t *bf, uint16_t v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole16(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe16(v);
-    cowb_write_buffer(wb, &v, sizeof(uint16_t));
+    cobuffer_write(bf, &v, sizeof(uint16_t));
 }
 
-void cowb_write_int32(cowb_t *wb, int32_t v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_int32(cobuffer_t *bf, int32_t v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole32(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe32(v);
-    cowb_write_buffer(wb, &v, sizeof(int32_t));
+    cobuffer_write(bf, &v, sizeof(int32_t));
 }
 
-void cowb_write_uint32(cowb_t *wb, uint32_t v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_uint32(cobuffer_t *bf, uint32_t v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole32(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe32(v);
-    cowb_write_buffer(wb, &v, sizeof(uint32_t));
+    cobuffer_write(bf, &v, sizeof(uint32_t));
 }
 
-void cowb_write_int64(cowb_t *wb, int64_t v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_int64(cobuffer_t *bf, int64_t v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole64(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe64(v);
-    cowb_write_buffer(wb, &v, sizeof(int64_t));
+    cobuffer_write(bf, &v, sizeof(int64_t));
 }
 
-void cowb_write_uint64(cowb_t *wb, uint64_t v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_uint64(cobuffer_t *bf, uint64_t v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole64(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe64(v);
-    cowb_write_buffer(wb, &v, sizeof(uint64_t));
+    cobuffer_write(bf, &v, sizeof(uint64_t));
 }
 
-void cowb_write_float32(cowb_t *wb, float v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_float32(cobuffer_t *bf, float v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole32f(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe32f(v);
-    cowb_write_buffer(wb, &v, sizeof(float));
+    cobuffer_write(bf, &v, sizeof(float));
 }
 
-void cowb_write_float64(cowb_t *wb, double v) {
-    if (wb->endian == CB_EN_LITTLE)
+void cobuffer_write_float64(cobuffer_t *bf, double v) {
+    if (bf->endian == CB_EN_LITTLE)
         v = htole64f(v);
-    else if (wb->endian == CB_EN_BIG)
+    else if (bf->endian == CB_EN_BIG)
         v = htobe64f(v);
-    cowb_write_buffer(wb, &v, sizeof(double));
+    cobuffer_write(bf, &v, sizeof(double));
 }
 
-void cowb_write_buffer(cowb_t *wb, void *buffer, int size) {
-    _wb_check_and_grow(wb, size);
-    memcpy((char*)wb->buffer+wb->pos, buffer, size);
-    wb->pos += size;
+void cobuffer_write(cobuffer_t *bf, const void *buffer, int size) {
+    _wb_check_and_grow(bf, size);
+    memcpy((char*)bf->buffer+bf->pos, buffer, size);
+    bf->pos += size;
 }
 
-void cocb_init(cocb_t *cb, int initsize) {
-    cb->size = initsize;
-    cb->head = 0;
-    cb->tail = 0;
-    cb->buffer = CO_MALLOC(initsize);
+coringbuf_t* coringbuf_new(int initsize) {
+    coringbuf_t *rb = CO_MALLOC(sizeof(*rb));
+    rb->size = initsize;
+    rb->head = 0;
+    rb->tail = 0;
+    rb->buffer = CO_MALLOC(initsize);
+    return rb;
 }
 
-void cocb_free(cocb_t *cb) {
-    CO_FREE(cb->buffer);
+void* coringbuf_free(coringbuf_t *rb) {
+    CO_FREE(rb->buffer);
+    CO_FREE(rb);
+    return NULL;
 }
 
-int cocb_read(cocb_t *cb, void *buffer, int size) {
-    int readable = cocb_readable_size(cb);
+int coringbuf_read(coringbuf_t *rb, void *buffer, int size) {
+    int readable = coringbuf_readable_size(rb);
     size = readable >= size ? size : readable;
-    int readonce = cocb_readonce_size(cb);
+    int readonce = coringbuf_readonce_size(rb);
     int len = CO_MIN(size, readonce);
-    memcpy(buffer, (uint8_t*)cb->buffer + cb->head, len);
+    memcpy(buffer, (uint8_t*)rb->buffer + rb->head, len);
     if (size > len)
-        memcpy((uint8_t*)buffer + len, cb->buffer, size-len);
-    cb->head = (cb->head + size) % cb->size;
+        memcpy((uint8_t*)buffer + len, rb->buffer, size-len);
+    rb->head = (rb->head + size) % rb->size;
     return size;
 }
 
-static inline void _cb_check_and_grow(cocb_t *cb, int size) {
-    int readable = cocb_readable_size(cb);
-    int writable = cb->size - readable;
+static inline void _cb_check_and_grow(coringbuf_t *rb, int size) {
+    int readable = coringbuf_readable_size(rb);
+    int writable = rb->size - readable;
     if (writable <= size) {
-        int newsize = CO_MAX(cb->size * 2, readable + size + 1);
-        cb->buffer = CO_REALLOC(cb->buffer, newsize);
-        if (cb->tail < cb->head) {
-            int readonce = cocb_readonce_size(cb);
-            memmove((uint8_t*)cb->buffer + newsize - readonce, (uint8_t*)cb->buffer + cb->head, readonce);
-            cb->head = newsize - readonce;
+        int newsize = CO_MAX(rb->size * 2, readable + size + 1);
+        rb->buffer = CO_REALLOC(rb->buffer, newsize);
+        if (rb->tail < rb->head) {
+            int readonce = coringbuf_readonce_size(rb);
+            memmove((uint8_t*)rb->buffer + newsize - readonce, (uint8_t*)rb->buffer + rb->head, readonce);
+            rb->head = newsize - readonce;
         }
-        cb->size = newsize;
+        rb->size = newsize;
     }
 }
 
-void cocb_write(cocb_t *cb, const void *buffer, int size) {
-    _cb_check_and_grow(cb, size);
-    int len = CO_MIN(size, cb->size - cb->tail);
-    memcpy((uint8_t*)cb->buffer + cb->tail, buffer, len);
+void coringbuf_write(coringbuf_t *rb, const void *buffer, int size) {
+    _cb_check_and_grow(rb, size);
+    int len = CO_MIN(size, rb->size - rb->tail);
+    memcpy((uint8_t*)rb->buffer + rb->tail, buffer, len);
     if (size > len)
-        memcpy((uint8_t*)cb->buffer, (uint8_t*)buffer + len, size - len);
-    cb->tail = (cb->tail + size) % cb->size;
+        memcpy((uint8_t*)rb->buffer, (uint8_t*)buffer + len, size - len);
+    rb->tail = (rb->tail + size) % rb->size;
 }
 
-void *cocb_head(cocb_t *cb) {
-    return (uint8_t*)cb->buffer + cb->head;
+void *coringbuf_head(coringbuf_t *rb) {
+    return (uint8_t*)rb->buffer + rb->head;
 }
 
-int cocb_readable_size(cocb_t *cb) {
-    if (cb->tail >= cb->head)
-        return cb->tail - cb->head;
+int coringbuf_readable_size(coringbuf_t *rb) {
+    if (rb->tail >= rb->head)
+        return rb->tail - rb->head;
     else
-        return cb->size - (cb->head - cb->tail);
+        return rb->size - (rb->head - rb->tail);
 }
 
-int cocb_readonce_size(cocb_t *cb) {
-    if (cb->tail >= cb->head)
-        return cb->tail - cb->head;
+int coringbuf_readonce_size(coringbuf_t *rb) {
+    if (rb->tail >= rb->head)
+        return rb->tail - rb->head;
     else
-        return cb->size - cb->head;
+        return rb->size - rb->head;
 }
 
-bool cocb_consume_size(cocb_t *cb, int size) {
-    int readable = cocb_readable_size(cb);
+bool coringbuf_consume_size(coringbuf_t *rb, int size) {
+    int readable = coringbuf_readable_size(rb);
     if (readable >= size) {
-        cb->head = (cb->head + size) % cb->size;
+        rb->head = (rb->head + size) % rb->size;
         return true;
     }
     return false;

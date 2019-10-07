@@ -13,15 +13,15 @@ extern "C" {
 
 // 队列结构
 typedef struct coqueue {
-    covec_t vec;        // 向量
+    covec_t *vec;        // 向量
     int head;           // 头
     int tail;           // 尾
 } coqueue_t;
 
 // 初始化队列，itemsize为元素大小
-void coqueue_init(coqueue_t *queue, uint16_t itemsize);
+coqueue_t* coqueue_new(uint16_t itemsize);
 // 释放队列
-void coqueue_free(coqueue_t *queue);
+void* coqueue_free(coqueue_t *queue);
 // 队列大小
 int coqueue_size(coqueue_t *queue);
 // 压入元素

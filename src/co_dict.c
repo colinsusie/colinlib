@@ -32,9 +32,10 @@ static void _check_and_resize(codict_t *dict) {
     }
 }
 
-void codict_init(codict_t *dict, copfn_hash fn_hash, copfn_equal fn_equal) {
+codict_t* codict_new(copfn_hash fn_hash, copfn_equal fn_equal) {
     assert(fn_hash);
     assert(fn_equal);
+    codict_t *dict = CO_MALLOC(sizeof(*dict));
     dict->cap = 0;
     dict->buckets = NULL;
     dict->count = 0;
@@ -43,6 +44,7 @@ void codict_init(codict_t *dict, copfn_hash fn_hash, copfn_equal fn_equal) {
     dict->listhead = NULL;
     dict->listtail = NULL;
     _check_and_resize(dict);
+    return dict;
 }
 
 codict_node_t * codict_get(codict_t *dict, const void *key, size_t keysz) {
@@ -136,9 +138,11 @@ void codict_clear(codict_t *dict) {
     dict->count = 0;
 }
 
-void codict_free(codict_t *dict) {
+void* codict_free(codict_t *dict) {
     codict_clear(dict);
     CO_FREE(dict->buckets);
+    CO_FREE(dict);
+    return NULL;
 }
 
 void codict_move(codict_t *dict, codict_node_t *node, bool head) {
@@ -190,8 +194,8 @@ static int codict_str_equal(const void *key1, const void *key2, size_t sz1, size
     return (sz1 == sz2) && (memcmp(key1, key2, sz1) == 0);
 }
 
-void codict_str(codict_t *dict) {
-    codict_init(dict, codict_fnv1a64_hash, codict_str_equal);
+codict_t* codict_str() {
+    return codict_new(codict_fnv1a64_hash, codict_str_equal);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -205,8 +209,8 @@ static int codict_int_equal(const void *key1, const void *key2, size_t sz1, size
     return *(int64_t*)key1 == *(int64_t*)key2;
 }
 
-void codict_int(codict_t *dict) {
-    codict_init(dict, codict_int_hash, codict_int_equal);
+codict_t* codict_int() {
+    return codict_new(codict_int_hash, codict_int_equal);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -220,6 +224,6 @@ static int codict_ptr_equal(const void *key1, const void *key2, size_t sz1, size
     return *(uint64_t*)key1 == *(uint64_t*)key2;
 }
 
-void codict_ptr(codict_t *dict) {
-    codict_init(dict, codict_ptr_hash, codict_ptr_equal);
+codict_t* codict_ptr() {
+    return codict_new(codict_ptr_hash, codict_ptr_equal);
 }

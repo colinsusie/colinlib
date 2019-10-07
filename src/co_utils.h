@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <time.h>
 #include <stdarg.h>
+#include <errno.h>
 #include "co_alloc.h"
 
 #ifdef __cplusplus

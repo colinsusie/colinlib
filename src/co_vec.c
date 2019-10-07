@@ -9,15 +9,19 @@ static inline void _check_and_grow(covec_t *vec) {
     }
 }
 
-void covec_init(covec_t *vec, uint16_t itemsize) {
+covec_t* covec_new(uint16_t itemsize) {
+    covec_t *vec = CO_MALLOC(sizeof(*vec));
     vec->itemsize = itemsize;
     vec->size = 0;
     vec->cap = 0;
     vec->data = NULL;
+    return vec;
 }
 
-void covec_free(covec_t *vec) {
+void* covec_free(covec_t *vec) {
     covec_clear(vec);
+    CO_FREE(vec);
+    return NULL;
 }
 
 void covec_clear(covec_t *vec) {

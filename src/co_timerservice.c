@@ -15,9 +15,10 @@ cots_t* cots_init(uint16_t interval, uint64_t currtime) {
     return sv;
 }
 
-void cots_free(cots_t* sv) {
+void* cots_free(cots_t* sv) {
     cofalloc_free(&sv->alloc);
     CO_FREE(sv);
+    return NULL;
 }
 
 void _on_timer(void *ud) {

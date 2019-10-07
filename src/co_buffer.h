@@ -21,96 +21,77 @@ typedef enum cb_endian {
 void coprintfbuffer(const void *buffer, int size, int blocksize);
 
 ///////////////////////////////////////////////////////////////////////////////////
-// 读buffer：通常用于解析格式化数据
+// 读写buffer
 
 // 只读buffer
-typedef struct corb {
+typedef struct cobuffer {
     void *buffer;
     int size;
     int pos;
     cb_endian_t endian;
-} corb_t;
-
-// 挂载buffer
-void corb_attach(corb_t *rb, void *buffer, int size, cb_endian_t endian);
-// 定位: abs指定是否绝对定位 false表示相对于当前pos，绝对定位支持-1,-2表示最后，返回实际的定位
-int corb_seek(corb_t *rb, bool abs, int pos);
-// buff大小位置等
-static inline void* corb_buffer(corb_t *rb) { return rb->buffer; }
-static inline int corb_size(corb_t *rb) { return rb->size; }
-static inline int corb_pos(corb_t *rb) { return rb->pos; }
-static inline int corb_remainder(corb_t *rb) { return rb->size - rb->pos; }
-// 读各种类型
-int8_t corb_read_int8(corb_t *rb, bool *succ);
-uint8_t corb_read_uint8(corb_t *rb, bool *succ);
-int16_t corb_read_int16(corb_t *rb, bool *succ);
-uint16_t corb_read_uint16(corb_t *rb, bool *succ);
-int32_t corb_read_int32(corb_t *rb, bool *succ);
-uint32_t corb_read_uint32(corb_t *rb, bool *succ);
-int64_t corb_read_int64(corb_t *rb, bool *succ);
-uint64_t corb_read_uint64(corb_t *rb, bool *succ);
-float corb_read_float32(corb_t *rb, bool *succ);
-double corb_read_float64(corb_t *rb, bool *succ);
-bool corb_read_buffer(corb_t *rb, void *buffer, int size);
-
-///////////////////////////////////////////////////////////////////////////////////
-// 写buffer：通常用于生成格式化的数据
-
-typedef struct cowb {
-    void *buffer;
-    int size;
-    int pos;
-    cb_endian_t endian;
-} cowb_t;
+} cobuffer_t;
 
 // 初始化和释放 
-void cowb_init(cowb_t *wb, int initsize, cb_endian_t endian);
-void cowb_free(cowb_t *wb);
+cobuffer_t* cobuffer_new(const char *buffer, int bufsz, cb_endian_t endian);
+void* cobuffer_free(cobuffer_t *bf);
 // 定位: abs指定是否绝对定位 false表示相对于当前pos，绝对定位支持-1,-2表示最后，返回实际的定位
-int cowb_seek(cowb_t *wb, bool abs, int pos);
+int cobuffer_seek(cobuffer_t *bf, bool abs, int pos);
 // buff大小位置等
-static inline void* cowb_buffer(cowb_t *wb) { return wb->buffer; };
-static inline int cowb_size(cowb_t *wb) { return wb->size; }
-static inline int cowb_pos(cowb_t *wb) { return wb->pos; }
-static inline int cowb_remainder(cowb_t *wb) { return wb->size - wb->pos; }
+static inline void* cobuffer_buffer(cobuffer_t *bf) { return bf->buffer; }
+static inline int cobuffer_size(cobuffer_t *bf) { return bf->size; }
+static inline int cobuffer_pos(cobuffer_t *bf) { return bf->pos; }
+// 通用读写
+bool cobuffer_read(cobuffer_t *bf, void *buffer, int size);
+void cobuffer_write(cobuffer_t *bf, const void *buffer, int size);
+// 读各种类型
+int8_t cobuffer_read_int8(cobuffer_t *bf, bool *succ);
+uint8_t cobuffer_read_uint8(cobuffer_t *bf, bool *succ);
+int16_t cobuffer_read_int16(cobuffer_t *bf, bool *succ);
+uint16_t cobuffer_read_uint16(cobuffer_t *bf, bool *succ);
+int32_t cobuffer_read_int32(cobuffer_t *bf, bool *succ);
+uint32_t cobuffer_read_uint32(cobuffer_t *bf, bool *succ);
+int64_t cobuffer_read_int64(cobuffer_t *bf, bool *succ);
+uint64_t cobuffer_read_uint64(cobuffer_t *bf, bool *succ);
+float cobuffer_read_float32(cobuffer_t *bf, bool *succ);
+double cobuffer_read_float64(cobuffer_t *bf, bool *succ);
 // 写各种类型
-void cowb_write_int8(cowb_t *wb, int8_t v);
-void cowb_write_uint8(cowb_t *wb, uint8_t v);
-void cowb_write_int16(cowb_t *wb, int16_t v);
-void cowb_write_uint16(cowb_t *wb, uint16_t v);
-void cowb_write_int32(cowb_t *wb, int32_t v);
-void cowb_write_uint32(cowb_t *wb, uint32_t v);
-void cowb_write_int64(cowb_t *wb, int64_t v);
-void cowb_write_uint64(cowb_t *wb, uint64_t v);
-void cowb_write_float32(cowb_t *wb, float v);
-void cowb_write_float64(cowb_t *wb, double v);
-void cowb_write_buffer(cowb_t *wb, void *buffer, int size);
+void cobuffer_write_int8(cobuffer_t *bf, int8_t v);
+void cobuffer_write_uint8(cobuffer_t *bf, uint8_t v);
+void cobuffer_write_int16(cobuffer_t *bf, int16_t v);
+void cobuffer_write_uint16(cobuffer_t *bf, uint16_t v);
+void cobuffer_write_int32(cobuffer_t *bf, int32_t v);
+void cobuffer_write_uint32(cobuffer_t *bf, uint32_t v);
+void cobuffer_write_int64(cobuffer_t *bf, int64_t v);
+void cobuffer_write_uint64(cobuffer_t *bf, uint64_t v);
+void cobuffer_write_float32(cobuffer_t *bf, float v);
+void cobuffer_write_float64(cobuffer_t *bf, double v);
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 // 圆形buffer: 用于生产者/消费者模式下的buffer，自增长
 
-typedef struct cocb {
+typedef struct coringbuf {
     void *buffer;
     int size;
     int head;
     int tail;
-} cocb_t;
+} coringbuf_t;
 
 // 初始化和释放circle buffer
-void cocb_init(cocb_t *cb, int initsize);
-void cocb_free(cocb_t *cb);
+coringbuf_t* coringbuf_new(int initsize);
+void* coringbuf_free(coringbuf_t *rb);
 // 读buffer，返回实际读到的buffer大小
-int cocb_read(cocb_t *cb, void *buffer, int size);
+int coringbuf_read(coringbuf_t *rb, void *buffer, int size);
 // 写buffer
-void cocb_write(cocb_t *cb, const void *buffer, int size);
+void coringbuf_write(coringbuf_t *rb, const void *buffer, int size);
 // 取缓冲的头
-void *cocb_head(cocb_t *cb);
+void *coringbuf_head(coringbuf_t *rb);
 // 还剩多少可以读
-int cocb_readable_size(cocb_t *cb);
+int coringbuf_readable_size(coringbuf_t *rb);
 // 可读一次连续的内存的大小
-int cocb_readonce_size(cocb_t *cb);
+int coringbuf_readonce_size(coringbuf_t *rb);
 // 消耗了多少内存
-bool cocb_consume_size(cocb_t *cb, int size);
+bool coringbuf_consume_size(coringbuf_t *rb, int size);
 
 #ifdef __cplusplus
 }

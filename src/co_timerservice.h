@@ -21,7 +21,7 @@ typedef struct cots {
 // 初始化定时器服务
 cots_t* cots_init(uint16_t interval, uint64_t currtime);
 // 释放定时器服务
-void cots_free(cots_t* sv);
+void* cots_free(cots_t* sv);
 // 增加定时器
 void* cots_add_timer(cots_t *sv, 
     uint32_t delay,     // 首次延迟

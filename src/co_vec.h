@@ -19,9 +19,9 @@ typedef struct covec {
 } covec_t;
 
 // 初始化向量，itemsize为子项大小
-void covec_init(covec_t *vec, uint16_t itemsize);
+covec_t* covec_new(uint16_t itemsize);
 // 释放向量
-void covec_free(covec_t *vec);
+void* covec_free(covec_t *vec);
 // 清除向量内容
 void covec_clear(covec_t *vec);
 // 取向量大小

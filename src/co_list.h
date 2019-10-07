@@ -23,8 +23,8 @@ typedef struct colist {
 } colist_t;
 
 // 初始化和释放, itemsize为结点数据的大小
-void colist_init(colist_t *list, uint16_t itemsize);
-void colist_free(colist_t *list);
+colist_t* colist_new(uint16_t itemsize);
+void* colist_free(colist_t *list);
 
 // 压入链表
 void colist_push_head(colist_t *list, const void *data);
