@@ -12,29 +12,29 @@ int main(int argc, char const *argv[])
         covec_push_head(vec, &i);
     }
     for (i = 40; i < 60; ++i) {
-        covec_push_at(vec, -1, &i);
+        covec_push(vec, -1, &i);
     }
 
     for (i = 0; i < covec_size(vec); ++i) {
-        covec_get_at(vec, i, &v);
+        covec_get(vec, i, &v);
         printf("index=%d, value=%d\n", i, v);
     }
 
     v = 100;
-    covec_set_at(vec, 0, &v);
-    covec_set_at(vec, 1, &v);
+    covec_set(vec, 0, &v);
+    covec_set(vec, 1, &v);
 
     for (i = 0; i < 2; ++i) {
-        covec_get_at(vec, i, &v);
+        covec_get(vec, i, &v);
         printf("index=%d, value=%d\n", i, v);
     }
 
     for (i = 0; i < 50; ++i) {
-        covec_del_at(vec, 0, NULL);
+        covec_del(vec, 0, NULL);
     }
 
     for (i = 0; i < covec_size(vec); ++i) {
-        covec_get_at(vec, i, &v);
+        covec_get(vec, i, &v);
         printf("index=%d, value=%d\n", i, v);
     }
 
@@ -42,7 +42,7 @@ int main(int argc, char const *argv[])
     covec_copy(vec, vec2);
 
     for (i = 0; i < covec_size(vec2); ++i) {
-        covec_get_at(vec2, i, &v);
+        covec_get(vec2, i, &v);
         printf("index=%d, value=%d\n", i, v);
     }
 

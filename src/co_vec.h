@@ -34,14 +34,14 @@ void covec_resize(covec_t *vec, int size);
 void covec_growcap(covec_t *vec, int cap);
 
 // 压入子项，index可以为-1, -2..，表示从最后一个计算
-bool covec_push_at(covec_t *vec, int index, void *data);
+bool covec_push(covec_t *vec, int index, void *data);
 // 压入最前面
 bool covec_push_head(covec_t *vec, void *data);
 // 压入最后面
 bool covec_push_tail(covec_t *vec, void *data);
 
 // 取子项，index可以为-1, -2..，表示从最后一个计算
-bool covec_get_at(covec_t *vec, int index, void *data);
+bool covec_get(covec_t *vec, int index, void *data);
 // 取第1个
 bool covec_get_head(covec_t *vec, void *data);
 // 取最后1个
@@ -50,14 +50,14 @@ bool covec_get_tail(covec_t *vec, void *data);
 void *covec_get_ptr(covec_t *vec, int index);
 
 // 设子项，index和上面一样
-bool covec_set_at(covec_t *vec, int index, const void *data);
+bool covec_set(covec_t *vec, int index, const void *data);
 // 设第1个
 bool covec_set_head(covec_t *vec, const void *data);
 // 设最后1个
 bool covec_set_tail(covec_t *vec, const void *data);
 
 // 删除子项，index和上面一样， data可以为NULL， 也可以有值，表示删除的同时取值
-bool covec_del_at(covec_t *vec, int index, void *data);
+bool covec_del(covec_t *vec, int index, void *data);
 // 删除第1个
 bool covec_del_head(covec_t *vec, void *data);
 // 删除最后1个

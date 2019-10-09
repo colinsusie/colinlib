@@ -50,7 +50,7 @@ void covec_growcap(covec_t *vec, int cap) {
     }
 }
 
-bool covec_push_at(covec_t *vec, int index, void *data) {
+bool covec_push(covec_t *vec, int index, void *data) {
     if (index < 0)
         index = vec->size + index;
     if (index < 0 || index > vec->size)
@@ -66,14 +66,14 @@ bool covec_push_at(covec_t *vec, int index, void *data) {
 }
 
 bool covec_push_head(covec_t *vec, void *data) {
-    return covec_push_at(vec, 0, data);
+    return covec_push(vec, 0, data);
 }
 
 bool covec_push_tail(covec_t *vec, void *data) {
-    return covec_push_at(vec, vec->size, data);
+    return covec_push(vec, vec->size, data);
 }
 
-bool covec_get_at(covec_t *vec, int index, void *data) {
+bool covec_get(covec_t *vec, int index, void *data) {
     if (index < 0)
         index = vec->size + index;
     if (index < 0 || index >= vec->size)
@@ -91,14 +91,14 @@ void *covec_get_ptr(covec_t *vec, int index) {
 }
 
 bool covec_get_head(covec_t *vec, void *data) {
-    return covec_get_at(vec, 0, data);
+    return covec_get(vec, 0, data);
 }
 
 bool covec_get_tail(covec_t *vec, void *data) {
-    return covec_get_at(vec, vec->size-1, data);
+    return covec_get(vec, vec->size-1, data);
 }
 
-bool covec_set_at(covec_t *vec, int index, const void *data) {
+bool covec_set(covec_t *vec, int index, const void *data) {
     if (index < 0)
         index = vec->size + index;
     if (index < 0 || index >= vec->size)
@@ -108,20 +108,20 @@ bool covec_set_at(covec_t *vec, int index, const void *data) {
 }
 
 bool covec_set_head(covec_t *vec, const void *data) {
-    return covec_set_at(vec, 0, data);
+    return covec_set(vec, 0, data);
 }
 
 bool covec_set_tail(covec_t *vec, const void *data) {
-    return covec_set_at(vec, vec->size-1, data);
+    return covec_set(vec, vec->size-1, data);
 }
 
-bool covec_del_at(covec_t *vec, int index, void *data) {
+bool covec_del(covec_t *vec, int index, void *data) {
     if (index < 0)
         index = vec->size + index;
     if (index < 0 || index >= vec->size)
         return false;
     if (data) {
-        covec_get_at(vec, index, data);
+        covec_get(vec, index, data);
     }
     if (index != vec->size-1) {
         covec_move(vec, index + 1, index, vec->size - index - 1);
@@ -131,11 +131,11 @@ bool covec_del_at(covec_t *vec, int index, void *data) {
 }
 
 bool covec_del_head(covec_t *vec, void *data) {
-    return covec_del_at(vec, 0, data);
+    return covec_del(vec, 0, data);
 }
 
 bool covec_del_tail(covec_t *vec, void *data) {
-    return covec_del_at(vec, vec->size-1, data);
+    return covec_del(vec, vec->size-1, data);
 }
 
 void covec_copy(covec_t *vfrom, covec_t *vto) {
@@ -153,9 +153,9 @@ void covec_swap(covec_t *vec, int idx1, int idx2) {
     uint8_t data1[32], data2[32];
     uint8_t *ptr1 = vec->itemsize <= 32 ? data1 : CO_MALLOC(vec->itemsize);
     uint8_t *ptr2 = vec->itemsize <= 32 ? data2 : CO_MALLOC(vec->itemsize);
-    if (covec_get_at(vec, idx1, ptr1) && covec_get_at(vec, idx2, ptr2)) {
-        covec_set_at(vec, idx1, ptr2);
-        covec_set_at(vec, idx2, ptr1);
+    if (covec_get(vec, idx1, ptr1) && covec_get(vec, idx2, ptr2)) {
+        covec_set(vec, idx1, ptr2);
+        covec_set(vec, idx2, ptr1);
     }
     if (ptr1 != data1) CO_FREE(ptr1);
     if (ptr2 != data2) CO_FREE(ptr2);

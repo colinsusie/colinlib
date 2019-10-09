@@ -8,7 +8,7 @@ typedef struct cotitem {
     uint32_t loop;
 } cotitem_t;
 
-cots_t* cots_init(uint16_t interval, uint64_t currtime) {
+cots_t* cots_new(uint16_t interval, uint64_t currtime) {
     cots_t* sv = CO_MALLOC(sizeof(cots_t));
     cofalloc_init(&sv->alloc, 4096, sizeof(cotitem_t));
     cotw_init(&sv->twheel, interval, currtime);

@@ -249,7 +249,8 @@ void cobuffer_write_float64(cobuffer_t *bf, double v) {
 
 void cobuffer_write(cobuffer_t *bf, const void *buffer, int size) {
     _wb_check_and_grow(bf, size);
-    memcpy((char*)bf->buffer+bf->pos, buffer, size);
+    if (buffer)
+        memcpy((char*)bf->buffer+bf->pos, buffer, size);
     bf->pos += size;
 }
 

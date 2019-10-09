@@ -30,7 +30,7 @@ static inline int costr_len(cochar *s) {
 // 创建字符串，len如果为-1，则默认调用strlen(s)
 cochar* costr_new(const char *s, int len);
 // 释放
-void costr_free(const char *s);
+void costr_free(char *s);
 // 格式化字符串，返回的字符串必须使用costr_free释放，如果有错误，返回NULL
 cochar* costr_format(const char *fmt, ...);
 cochar* costr_formatv(const char *fmt, va_list ap);

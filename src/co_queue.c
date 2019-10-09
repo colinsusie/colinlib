@@ -39,14 +39,14 @@ static void _check_and_grow(coqueue_t *queue) {
 
 void coqueue_push(coqueue_t *queue, const void *data) {
     _check_and_grow(queue);
-    covec_set_at(queue->vec, queue->tail, data);
+    covec_set(queue->vec, queue->tail, data);
     queue->tail = (queue->tail + 1) % queue->vec->size;
 }
 
 bool coqueue_pop(coqueue_t *queue, void *data) {
     int size = coqueue_size(queue);
     if (size) {
-        covec_get_at(queue->vec, queue->head, data);
+        covec_get(queue->vec, queue->head, data);
         queue->head = (queue->head + 1) % queue->vec->size;
         return true;
     }
@@ -60,7 +60,7 @@ bool coqueue_peek(coqueue_t *queue, int index, void *data) {
     if (index < 0 || index >= size)
         return false;
     index = (queue->head + index) % queue->vec->size;
-    covec_get_at(queue->vec, index, data);
+    covec_get(queue->vec, index, data);
     return true;
 }
 

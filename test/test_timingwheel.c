@@ -9,12 +9,6 @@ static cotnode_t node2;
 static cotnode_t node3;
 static cotnode_t node4;
 
-static uint64_t gettime() {
-    struct timeval tm;
-    gettimeofday(&tm, NULL);
-    return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
-}
-
 void _print_timerwheel(coclink_node_t *vec, int idx, int size) {
     int i;
     printf("========================================%d\n", idx);

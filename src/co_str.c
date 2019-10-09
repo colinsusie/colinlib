@@ -11,7 +11,7 @@ cochar* costr_new(const char *s, int len) {
     return str;
 }
 
-void costr_free(const char *s) {
+void costr_free(char *s) {
     CO_FREE(s-sizeof(costrheader_t));
 }
 
