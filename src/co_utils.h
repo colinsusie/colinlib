@@ -51,6 +51,11 @@ static inline uint64_t gettime() {
     return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
 }
 
+static inline int randrange(int a, int b) {
+    double d = (double)rand() / RAND_MAX;
+    return (int)(d * (b - a) + a);
+}
+
 #ifdef __cplusplus
 }
 #endif

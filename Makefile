@@ -2,7 +2,7 @@ all: test
 
 test: test_falloc test_dict test_vec test_queue test_list test_buffer \
 	test_utf8 test_timingwheel test_timerservice test_coroutine \
-	test_echo_server test_echo_client test_udp_dns
+	test_echo_server test_echo_client test_udp_dns test_echo_tps
 
 test_falloc: test/test_falloc.c src/co_utils.h src/co_falloc.h src/co_falloc.c
 	gcc -g -Wall -o test_falloc test/test_falloc.c src/co_falloc.c
@@ -45,6 +45,9 @@ test_echo_client: test/test_echo_client.c $(csrc) $(cinc)
 	gcc -g -Wall -o test_echo_client test/test_echo_client.c $(csrc)
 test_udp_dns: test/test_udp_dns.c $(csrc) $(cinc)
 	gcc -g -Wall -o test_udp_dns test/test_udp_dns.c $(csrc)
+test_echo_tps: test/test_echo_tps.c $(csrc) $(cinc)
+	gcc -g -Wall -o test_echo_tps test/test_echo_tps.c $(csrc)
+
 
 .PHONY: clean
 clean:

@@ -319,7 +319,7 @@ static void _cotcp_handle_read(coloop_t *loop, cotcp_t *tcp) {
             if (tcp->state == COTCP_CONNECTED) {
                 if (tcp->fn_recv)
                     tcp->fn_recv(loop->ioserivce, tcp, tcp->recvbuf, n);
-                if (n == tcp->recvsize) {
+                if (tcp->state != COTCP_INVALID && n == tcp->recvsize) {
                     tcp->recvsize = CO_MIN(MAX_READ_BUF, tcp->recvsize*2);
                     tcp->recvbuf = CO_REALLOC(tcp->recvbuf, tcp->recvsize);
                 }
@@ -660,7 +660,7 @@ static void _cofd_handle_read(coloop_t *loop, cofd_t *fd) {
         } else {
             if (fd->fn_recv)
                 fd->fn_recv(loop->ioserivce, fd, fd->recvbuf, n);
-            if (n == fd->recvsize) {
+            if (fd->state != COFD_INVALID &&n == fd->recvsize) {
                 fd->recvsize = CO_MIN(MAX_READ_BUF, fd->recvsize*2);
                 fd->recvbuf = CO_REALLOC(fd->recvbuf, fd->recvsize);
             }
@@ -980,7 +980,7 @@ static void _coudp_handle_read(coloop_t *loop, coudp_t *udp) {
         } else {
             if (udp->fn_recv)
                 udp->fn_recv(loop->ioserivce, udp, udp->recvbuf, n, (struct sockaddr*) &claddr, addrlen);
-            if (n == udp->recvsize) {
+            if (udp->state != COUDP_INVALID &&n == udp->recvsize) {
                 udp->recvsize = CO_MIN(MAX_READ_BUF, udp->recvsize*2);
                 udp->recvbuf = CO_REALLOC(udp->recvbuf, udp->recvsize);
             }
