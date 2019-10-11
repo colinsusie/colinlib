@@ -145,6 +145,17 @@ static inline void* copoll_userdata(void *copoll) {
     return ((cokqueue_t*)copoll)->ud;
 }
 
+// 删除监听
+static inline int copoll_del(void *copoll, int fd) {
+    cokqueue_t *ep = (cokqueue_t*)copoll;
+    struct kevent ke;
+	EV_SET(&ke, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+	kevent(ep->efd, &ke, 1, NULL, 0, NULL);
+	EV_SET(&ke, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
+	kevent(ep->efd, &ke, 1, NULL, 0, NULL);
+    return 0;
+}
+
 // 启动读监听
 static inline int copoll_add(void *copoll, int fd, void *ud) {
     cokqueue_t *ep = (cokqueue_t*)copoll;
@@ -175,17 +186,6 @@ static inline int copoll_request_write(void *copoll, int fd, void *ud, bool enab
 	if (kevent(ep->efd, &ke, 1, NULL, 0, NULL) == -1 || ke.flags & EV_ERROR)
 		return -1;
 	return 0;
-}
-
-// 删除监听
-static inline int copoll_del(void *copoll, int fd) {
-    cokqueue_t *ep = (cokqueue_t*)copoll;
-    struct kevent ke;
-	EV_SET(&ke, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-	kevent(ep->efd, &ke, 1, NULL, 0, NULL);
-	EV_SET(&ke, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
-	kevent(ep->efd, &ke, 1, NULL, 0, NULL);
-    return 0;
 }
 
 // 等待事件到达
