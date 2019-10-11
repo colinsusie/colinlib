@@ -171,7 +171,7 @@ static inline int copoll_add(void *copoll, int fd, void *ud) {
 static inline int copoll_request_write(void *copoll, int fd, void *ud, bool enable) {
     cokqueue_t *ep = (cokqueue_t*)copoll;
     struct kevent ke;
-	EV_SET(&ke, sock, EVFILT_WRITE, enable ? EV_ENABLE : EV_DISABLE, 0, 0, ud);
+	EV_SET(&ke, fd, EVFILT_WRITE, enable ? EV_ENABLE : EV_DISABLE, 0, 0, ud);
 	if (kevent(copoll->efd, &ke, 1, NULL, 0, NULL) == -1 || ke.flags & EV_ERROR)
 		return -1;
 	return 0;
@@ -181,9 +181,9 @@ static inline int copoll_request_write(void *copoll, int fd, void *ud, bool enab
 static inline int copoll_del(void *copoll, int fd) {
     cokqueue_t *ep = (cokqueue_t*)copoll;
     struct kevent ke;
-	EV_SET(&ke, sock, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+	EV_SET(&ke, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
 	kevent(ep->efd, &ke, 1, NULL, 0, NULL);
-	EV_SET(&ke, sock, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
+	EV_SET(&ke, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
 	kevent(ep->efd, &ke, 1, NULL, 0, NULL);
     return 0;
 }
