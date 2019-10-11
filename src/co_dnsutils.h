@@ -1,3 +1,7 @@
+/**
+ * DNS解析函数
+ *                  by colin
+ */
 #ifndef __CO_DNSUTILS__
 #define __CO_DNSUTILS__
 #include "co_utils.h"
@@ -6,10 +10,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// #define MAX_LABEL_LEN 63
-// #define MAX_PACKET_LEN 512
-// #define DNS_HEADER_LEN 12
 
 // IP地址结构
 typedef struct ipaddr {

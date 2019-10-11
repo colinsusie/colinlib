@@ -215,3 +215,7 @@ int cort_status(cosched_t * S, int id) {
 int cort_running(cosched_t * S) {
 	return S->running;
 }
+
+bool cort_ismain(int co) {
+	return co == MAIN_CO_ID;
+}

@@ -47,13 +47,13 @@ void run() {
     while (1) {
         ++i;
         usleep(1000);
-        cotw_update(&tw, gettime());
+        cotw_update(&tw, co_gettime());
     }
 }
 
 int main(int argc, char const *argv[])
 {
-    cotw_init(&tw, 1, gettime());
+    cotw_init(&tw, 1, co_gettime());
     tw.currtick = 0xFFFFFFFF;
 
     cotw_node_init(&node, on_timer, (void*)(intptr_t)1);

@@ -3,7 +3,6 @@
 cotcp_t *client_tcp = NULL;
 
 void on_recv(coios_t *ss, cotcp_t* tcp, const void *buff, int size) {
-    // 接收到数据，打印出来
     write(STDOUT_FILENO, buff, size);
 }
 
@@ -45,8 +44,7 @@ void run_client(coloop_t *loop) {
     cofd_t *fd = cofd_bind(loop->ioserivce, STDIN_FILENO, NULL);
     cofd_on_recv(loop->ioserivce, fd, on_stdin_input);
     // 连接服务器
-    if (!cotcp_connect(loop->ioserivce, "127.0.0.1", "3458", NULL,  on_connected,  on_connect_error))
-        exit(1);
+    cotcp_connect(loop->ioserivce, "127.0.0.1", "3458", NULL,  on_connected,  on_connect_error);
 }
 
 int main(int argc, char const *argv[])

@@ -17,18 +17,17 @@ typedef enum cb_endian {
     CB_EN_BIG,          // 大端
 } cb_endian_t;
 
-// 打印BUFF
+// 打印BUFF：调试用
 void coprintfbuffer(const void *buffer, int size, int blocksize);
 
 ///////////////////////////////////////////////////////////////////////////////////
 // 读写buffer
 
-// 只读buffer
 typedef struct cobuffer {
-    void *buffer;
-    int size;
-    int pos;
-    cb_endian_t endian;
+    void *buffer;           // 内存
+    int size;               // 内存大小
+    int pos;                // 当前读或写的位置
+    cb_endian_t endian;     // 字节序
 } cobuffer_t;
 
 // 初始化和释放 

@@ -32,7 +32,7 @@ struct coios;
 typedef struct coios coios_t;
 
 // 预留大小
-#define COTCP_SIZE 16384
+#define COTCP_SIZE 8192
 #define COUDP_SIZE 4096
 #define COFD_SIZE 1024
 
@@ -48,6 +48,7 @@ typedef struct coio {
     uint8_t state;              // 当前状态
     uint16_t recvsize;          // 接受buff大小
     void *recvbuf;              // 接受buff
+    coios_t *ioservice;         // IO service
     void *ud;                   // 用户数据
 } coio_t;
 
@@ -79,6 +80,7 @@ typedef struct cotcp {
     uint8_t state;              // 当前状态
     uint16_t recvsize;          // 接受buff大小
     void *recvbuf;              // 接受buff
+    coios_t *ioservice;         // IO service
     void *ud;                   // 用户数据
     coringbuf_t *sendbuf;       // 发送buff
     fn_tcp_connect_t fn_connect;// 各种事件
@@ -147,6 +149,7 @@ typedef struct coudp {
     uint8_t state;              // 当前状态
     uint16_t recvsize;          // 接受buff大小
     void *recvbuf;              // 接受buff
+    coios_t *ioservice;         // IO service
     void *ud;                   // 用户数据
     udpsendlist_t sendlist;     // 发送列表
     fn_udp_recv_t fn_recv;
@@ -188,6 +191,7 @@ typedef struct cofd {
     uint8_t state;              // 当前状态
     uint16_t recvsize;          // 接受buff大小
     void *recvbuf;              // 接受buff
+    coios_t *ioservice;         // IO service
     void *ud;                   // 用户数据
     coringbuf_t *sendbuf;       // 发送buff
     fn_fd_recv_t fn_recv;       // 事件

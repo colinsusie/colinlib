@@ -2,9 +2,11 @@
 
 typedef struct cotitem {
     cots_t *sv;
-    timer_cb_t cb;
+    fn_timer_t cb;
 	cotnode_t node;
-	void *ud;
+	void *ud1;
+    void *ud2;
+    void *ud3;
     uint32_t loop;
 } cotitem_t;
 
@@ -28,16 +30,18 @@ void _on_timer(void *ud) {
         cotw_add(&sv->twheel, &item->node, item->loop);
     }
     if (item->cb) {
-        item->cb(item->ud);
+        item->cb(sv, item->ud1, item->ud2, item->ud3);
     }
 }
 
-void* cots_add_timer(cots_t *sv, uint32_t delay, uint32_t loop, timer_cb_t cb, void *ud) {
+void* cots_add_timer(cots_t *sv, uint32_t delay, uint32_t loop, fn_timer_t cb, void *ud1, void *ud2, void *ud3) {
     cotitem_t *item =  cofalloc_newitem(&sv->alloc);
     item->sv = sv;
     item->loop = loop;
     item->cb = cb;
-    item->ud = ud;
+    item->ud1 = ud1;
+    item->ud2 = ud2;
+    item->ud3 = ud3;
     cotw_node_init(&item->node, _on_timer, item);
     cotw_add(&sv->twheel, &item->node, delay);
     return item;
@@ -56,4 +60,28 @@ void cots_del_timer(cots_t *sv, void **handle) {
 
 void cots_update(cots_t *sv, uint64_t currtime) {
     cotw_update(&sv->twheel, currtime);
+}
+
+static void _cots_print(coclink_node_t *vec, int idx, int size) {
+    int i;
+    printf("========================================%d\n", idx);
+    for (i = 0;i < size; ++i) {
+        coclink_node_t *head = vec + i;
+        if (!coclink_is_empty(head)) {
+            coclink_node_t *node = head->next;
+            while (node != head) {
+                cotnode_t *tnode = (cotnode_t*)node;
+                printf("  %d: (expire=%u)\n", i, tnode->expire);
+                node = node->next;
+            }
+        }
+    }
+}
+
+void cots_print(cots_t *sv) {
+    _cots_print(sv->twheel.tvroot.vec, 0, TVR_SIZE);
+    _cots_print(sv->twheel.tv[0].vec, 1, TVN_SIZE);
+    _cots_print(sv->twheel.tv[1].vec, 2, TVN_SIZE);
+    _cots_print(sv->twheel.tv[2].vec, 3, TVN_SIZE);
+    _cots_print(sv->twheel.tv[3].vec, 4, TVN_SIZE);
 }

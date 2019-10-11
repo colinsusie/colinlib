@@ -1,3 +1,7 @@
+/**
+ * epoll/kqueue 封装
+ *                      by colin
+ */
 #ifndef __CO_EPOLL__
 #define __CO_EPOLL__
 

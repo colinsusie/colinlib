@@ -23,7 +23,7 @@ void on_error(coios_t *ss, cotcp_t* tcp, const char *msg) {
 void on_recv(coios_t *ss, cotcp_t* tcp, const void *buff, int size) {
     recvcount += size;
     if (done && recvcount == sendcount) {
-        uint64_t tm = gettime();
+        uint64_t tm = co_gettime();
         printf("done: %ju\n", tm - starttime);
         cotcp_close(ss, tcp, true);
         // coloop_stop(ss->loop);
@@ -35,10 +35,10 @@ void on_connect_error(coios_t *ss, cotcp_t* tcp, const char *msg) {
     coloop_stop(ss->loop);
 }
 
-void on_timer(void *ud) {
+void on_timer(cots_t *ts, void *ud1, void *ud2, void *ud3) {
     int i;
     for (i = 0; i < 200; ++i) {
-        int size = randrange(128, buffsize);
+        int size = co_randrange(128, buffsize);
         cotcp_send(loop->ioserivce, client_tcp, buff, size);
         sendcount += size;
     }
@@ -57,8 +57,8 @@ void on_connected(coios_t *ss, cotcp_t* tcp) {
 
     buff = CO_MALLOC(buffsize);
     memset(buff, 'a', buffsize);
-    starttime = gettime();
-    thandler = cots_add_timer(ss->loop->timeservice, 1, 1, on_timer, NULL);
+    starttime = co_gettime();
+    thandler = cots_add_timer(ss->loop->timeservice, 1, 1, on_timer, NULL, NULL, NULL);
 }
 
 void run_test(coloop_t *loop) {
@@ -70,5 +70,6 @@ int main(int argc, char const *argv[]) {
     run_test(loop);
     coloop_run(loop);
     coloop_free(loop);
+    CO_FREE(buff);
     return 0;
 }

@@ -1,5 +1,6 @@
 /**
  * 内存分配单元，方便后续替换
+ *                        by colin
  */
 #ifndef __CO_ALLOC__
 #define __CO_ALLOC__

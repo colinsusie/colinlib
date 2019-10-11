@@ -137,20 +137,23 @@ static void _coios_process_event(coloop_t *loop, copollevent_t *ev) {
 }
 
 coios_t* coios_new(coloop_t *loop) {
-    coios_t *ss = CO_MALLOC(sizeof(*ss));
+    coios_t *ss = CO_MALLOC(sizeof(coios_t));
     memset(ss, 0, sizeof(*ss));
     int i;
     for (i = 0; i < COTCP_SIZE; ++i) {
         cotcp_t *tcp = &ss->tcps[i];
         tcp->type = COIO_TCP;
+        tcp->ioservice = ss;
     }
     for (i = 0; i < COUDP_SIZE; ++i) {
         coudp_t *udp = &ss->udps[i];
         udp->type = COIO_UDP;
+        udp->ioservice = ss;
     }
     for (i = 0; i < COFD_SIZE; ++i) {
         cofd_t *cofd = &ss->fds[i];
         cofd->type = COIO_FD; 
+        cofd->ioservice = ss;
     }
     ss->loop = loop;
     coloop_processcb(loop, _coios_process_event);
@@ -206,6 +209,7 @@ static void _cotcp_free(coios_t *ss, cotcp_t *tcp) {
         CO_FREE(tcp->recvbuf);
     memset(tcp, 0, sizeof(*tcp));
     tcp->type = COIO_TCP;
+    tcp->ioservice = ss;
 }
 
 static bool _cotcp_has_senddata(cotcp_t *tcp) {
@@ -564,6 +568,7 @@ static void _cofd_free(coios_t *ss, cofd_t *fd) {
         CO_FREE(fd->recvbuf);
     memset(fd, 0, sizeof(*fd));
     fd->type = COIO_FD;
+    fd->ioservice = ss;
 }
 
 static bool _cofd_has_senddata(cofd_t *fd) {
@@ -745,6 +750,7 @@ static void _coudp_free(coios_t *ss, coudp_t *udp) {
     _udpbuffer_free(&udp->sendlist);
     memset(udp, 0, sizeof(*udp));
     udp->type = COIO_UDP;
+    udp->ioservice = ss;
 }
 
 void _udpbuffer_add(udpsendlist_t *list, const void *buff, int size, struct sockaddr *addr, socklen_t addrlen) {

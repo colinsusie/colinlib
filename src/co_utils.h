@@ -1,3 +1,7 @@
+/**
+ * 基础单元，一些常用的宏和函数
+ *                      by colin
+ */
 #ifndef __CO_UTILS__
 #define __CO_UTILS__
 
@@ -45,15 +49,22 @@ static inline uint32_t roundup_pow2(uint32_t size) {
 }
 
 // 取当前时间，毫秒单位
-static inline uint64_t gettime() {
+static inline uint64_t co_gettime() {
     struct timeval tm;
     gettimeofday(&tm, NULL);
     return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
 }
 
-static inline int randrange(int a, int b) {
-    double d = (double)rand() / RAND_MAX;
-    return (int)(d * (b - a) + a);
+// 取a到b的随机值[a, b]
+static inline int co_randrange(int a, int b) {
+    double d = (double)rand() / ((double)RAND_MAX + 1.0);
+    d *= (double)(b - a) + 1.0;
+    return (int)d + a;
+}
+
+// 取一个随机值[0, 1)
+static inline double co_random() {
+    return (double)rand() / ((double)RAND_MAX + 1.0);
 }
 
 #ifdef __cplusplus

@@ -4,7 +4,7 @@
 coloop_t* coloop_new(uint16_t interval) {
     coloop_t *loop = CO_MALLOC(sizeof(*loop));
     loop->timeout = interval;
-    loop->currtime = gettime();
+    loop->currtime = co_gettime();
     loop->fn_idle = NULL;
     loop->fn_process = NULL;
     loop->stop = false;
@@ -43,7 +43,7 @@ static void _copoll_callback(void *copoll, copollevent_t *ev, void *ud) {
 
 void coloop_runonce(coloop_t *loop) {
     copoll_wait(loop->poll, loop->timeout, _copoll_callback, loop);
-    loop->currtime = gettime();
+    loop->currtime = co_gettime();
     cots_update(loop->timeservice,  loop->currtime);
 }
 

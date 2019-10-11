@@ -23,8 +23,9 @@ void* colist_free(colist_t *list) {
 }
 
 void colist_push_head(colist_t *list, const void *data) {
-    colist_node_t *node = CO_MALLOC(list->itemsize);
-    memset(node, 0, sizeof(colist_node_t));
+    int size = sizeof(colist_node_t) + list->itemsize;
+    colist_node_t *node = CO_MALLOC(size);
+    memset(node, 0, size);
     memcpy((char*)node + sizeof(colist_node_t), data, list->itemsize);
     if (!list->head) {
         list->head = list->tail = node;
@@ -36,8 +37,9 @@ void colist_push_head(colist_t *list, const void *data) {
 }
 
 void colist_push_tail(colist_t *list, const void *data) {
-    colist_node_t *node = CO_MALLOC(list->itemsize);
-    memset(node, 0, sizeof(colist_node_t));
+    int size = sizeof(colist_node_t) + list->itemsize;
+    colist_node_t *node = CO_MALLOC(size);
+    memset(node, 0, size);
     memcpy((char*)node + sizeof(colist_node_t), data, list->itemsize);
     if (!list->tail) {
         list->head = list->tail = node;
@@ -50,8 +52,9 @@ void colist_push_tail(colist_t *list, const void *data) {
 
 void colist_push_at(colist_t *list, colist_node_t *node, const void *data, bool before) {
     assert(node);
-    colist_node_t *newnode = CO_MALLOC(list->itemsize);
-    memset(newnode, 0, sizeof(colist_node_t));
+    int size = sizeof(colist_node_t) + list->itemsize;
+    colist_node_t *newnode = CO_MALLOC(size);
+    memset(newnode, 0, size);
     memcpy((char*)newnode + sizeof(colist_node_t), data, list->itemsize);
     if (before) {
         newnode->next = node;

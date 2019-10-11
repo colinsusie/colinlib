@@ -1,5 +1,6 @@
 /**
  * 字节序转换
+ *                  by colin
  */
 #ifndef __CO_ENDIAN__
 #define __CO_ENDIAN__

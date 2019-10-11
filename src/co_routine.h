@@ -38,6 +38,8 @@ int cort_status(cosched_t *, int id);
 int cort_running(cosched_t *);
 // 调用yield让出执行权
 int cort_yield(cosched_t *);
+// 当前是否是主协程
+bool cort_ismain(int co);
 
 #ifdef __cplusplus
 }

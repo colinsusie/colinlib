@@ -6,8 +6,8 @@ cots_t *sv;
 void *thandle;
 int count;
 
-void on_timer(void *ud) {
-    printf("on_timer: %ju\n", gettime());
+void on_timer(cots_t *ts, void *ud1, void *ud2, void *ud3) {
+    printf("on_timer: %ju\n", co_gettime());
     ++count;
     if (count == 10)
         cots_del_timer(sv, &thandle);
@@ -16,16 +16,16 @@ void on_timer(void *ud) {
 void run() {
     while (1) {
         usleep(1000);
-        cots_update(sv, gettime());
+        cots_update(sv, co_gettime());
     }
 }
 
 
 int main(int argc, char const *argv[])
 {
-    sv = cots_new(10, gettime());
+    sv = cots_new(10, co_gettime());
 
-    thandle = cots_add_timer(sv, 100, 100, on_timer, NULL);
+    thandle = cots_add_timer(sv, 100, 100, on_timer, NULL, NULL, NULL);
 
     run();
 

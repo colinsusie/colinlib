@@ -29,22 +29,17 @@ void on_recv(coios_t *ss, coudp_t* udp, const void *buff, int size, struct socka
     if (code != 0) {
         switch (code) {
             case 1:
-                fprintf(stderr, "Format error\n");
-                return;
+                fprintf(stderr, "Format error\n"); return;
             case 2: 
-                fprintf(stderr, "Server failure\n");
-                return;
+                fprintf(stderr, "Server failure\n"); return;
             case 3: 
-                fprintf(stderr, "Name Error\n");
-                return;
+                fprintf(stderr, "Name Error\n"); return;
             case 4: 
-                fprintf(stderr, "Not Implemented\n");
-                return;
+                fprintf(stderr, "Not Implemented\n"); return;
             case 5:
-                fprintf(stderr, "Refused\n");
-                return;
+                fprintf(stderr, "Refused\n"); return;
             default:
-                break;
+                return;
         }
     }
     // IP列表
