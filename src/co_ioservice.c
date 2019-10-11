@@ -5,7 +5,7 @@
 
 #define BACKLOG 128
 #define INIT_READ_BUF 512
-#define MAX_READ_BUF 65536
+#define MAX_READ_BUF (uint16_t)65536
 
 int coios_ignsigpipe() {
 	struct sigaction sa;
