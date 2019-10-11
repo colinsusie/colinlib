@@ -1,7 +1,6 @@
 #include "../src/co_loop.h"
 
 cotcp_t *client_tcp = NULL;
-
 void on_recv(coios_t *ss, cotcp_t* tcp, const void *buff, int size) {
     write(STDOUT_FILENO, buff, size);
 }
@@ -35,8 +34,7 @@ void on_connect_error(coios_t *ss, cotcp_t* tcp, const char *msg) {
 
 void on_stdin_input(coios_t *ss, cofd_t *fd, const void *buf, int size) {
     // 从stdin得到数据，发送给服务器
-    if (client_tcp)
-        cotcp_send(ss, client_tcp, buf, size);
+    if (client_tcp) cotcp_send(ss, client_tcp, buf, size);
 }
 
 void run_client(coloop_t *loop) {
@@ -47,8 +45,7 @@ void run_client(coloop_t *loop) {
     cotcp_connect(loop->ioserivce, "127.0.0.1", "3458", NULL,  on_connected,  on_connect_error);
 }
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     coios_ignsigpipe();
     coloop_t *loop = coloop_new(10);
     run_client(loop);
