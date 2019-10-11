@@ -28,7 +28,7 @@ void cotw_node_init(cotnode_t *node, timer_cb_t cb, void *ud) {
 static void _cotw_add(cotw_t *tw, cotnode_t *node) {
     uint32_t expire = node->expire;
     uint32_t idx = expire - tw->currtick;
-    coclink_node_t *head;
+    coclink_node_t *head = NULL;
     if (idx < TVR_SIZE) {
         head = tw->tvroot.vec + FIRST_INDEX(expire);
     } else {
@@ -43,7 +43,8 @@ static void _cotw_add(cotw_t *tw, cotnode_t *node) {
             }
         }
     }
-    coclink_add_back(head, (coclink_node_t*)node);
+    if (head)
+        coclink_add_back(head, (coclink_node_t*)node);
 }
 
 void cotw_add(cotw_t *tw, cotnode_t *node, uint32_t ticks) {

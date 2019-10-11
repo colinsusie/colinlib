@@ -172,7 +172,7 @@ static inline int copoll_request_write(void *copoll, int fd, void *ud, bool enab
     cokqueue_t *ep = (cokqueue_t*)copoll;
     struct kevent ke;
 	EV_SET(&ke, fd, EVFILT_WRITE, enable ? EV_ENABLE : EV_DISABLE, 0, 0, ud);
-	if (kevent(copoll->efd, &ke, 1, NULL, 0, NULL) == -1 || ke.flags & EV_ERROR)
+	if (kevent(ep->efd, &ke, 1, NULL, 0, NULL) == -1 || ke.flags & EV_ERROR)
 		return -1;
 	return 0;
 }
