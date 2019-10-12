@@ -35,7 +35,7 @@ void on_connect_error(coios_t *ss, cotcp_t* tcp, const char *msg) {
     coloop_stop(ss->loop);
 }
 
-void on_timer(cots_t *ts, void *ud1, void *ud2, void *ud3) {
+void on_timer(cots_t *ts, void *th, void *ud1, void *ud2) {
     int i;
     for (i = 0; i < 200; ++i) {
         int size = co_randrange(128, buffsize);
@@ -58,7 +58,7 @@ void on_connected(coios_t *ss, cotcp_t* tcp) {
     buff = CO_MALLOC(buffsize);
     memset(buff, 'a', buffsize);
     starttime = co_gettime();
-    thandler = cots_add_timer(ss->loop->timeservice, 1, 1, on_timer, NULL, NULL, NULL);
+    thandler = cots_add_timer(ss->loop->timeservice, 1, 1, on_timer, NULL, NULL);
 }
 
 void run_test(coloop_t *loop) {

@@ -6,7 +6,6 @@ typedef struct cotitem {
 	cotnode_t node;
 	void *ud1;
     void *ud2;
-    void *ud3;
     uint32_t loop;
 } cotitem_t;
 
@@ -30,18 +29,17 @@ void _on_timer(void *ud) {
         cotw_add(&sv->twheel, &item->node, item->loop);
     }
     if (item->cb) {
-        item->cb(sv, item->ud1, item->ud2, item->ud3);
+        item->cb(sv, item, item->ud1, item->ud2);
     }
 }
 
-void* cots_add_timer(cots_t *sv, uint32_t delay, uint32_t loop, fn_timer_t cb, void *ud1, void *ud2, void *ud3) {
+void* cots_add_timer(cots_t *sv, uint32_t delay, uint32_t loop, fn_timer_t cb, void *ud1, void *ud2) {
     cotitem_t *item =  cofalloc_newitem(&sv->alloc);
     item->sv = sv;
     item->loop = loop;
     item->cb = cb;
     item->ud1 = ud1;
     item->ud2 = ud2;
-    item->ud3 = ud3;
     cotw_node_init(&item->node, _on_timer, item);
     cotw_add(&sv->twheel, &item->node, delay);
     return item;

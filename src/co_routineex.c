@@ -13,7 +13,7 @@ void* cortenv_free(cortenv_t *env) {
     return NULL;
 }
 
-static void _on_sleep_timer(cots_t *ts, void *ud1, void *ud2, void *ud3) {
+static void _on_sleep_timer(cots_t *ts, void *th, void *ud1, void *ud2) {
     cortenv_t *env = (cortenv_t*)ud1;
     int co = (int)(intptr_t)ud2;
     cort_resume(env->sch, co);
@@ -28,7 +28,7 @@ void cort_sleep(cortenv_t *env, uint32_t ms) {
         fprintf(stderr, "The main coroutine can't sleep\n");
         return;
     }
-    cots_add_timer(env->loop->timeservice, ms, 0, _on_sleep_timer, env, (void*)(intptr_t)co, NULL);
+    cots_add_timer(env->loop->timeservice, ms, 0, _on_sleep_timer, env, (void*)(intptr_t)co);
     cort_yield(env->sch);
 }
 

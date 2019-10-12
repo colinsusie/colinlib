@@ -18,7 +18,7 @@ typedef struct cots {
     cotw_t twheel;
 } cots_t;
 
-typedef void (*fn_timer_t)(cots_t *ts, void *ud1, void *ud2, void *ud3);
+typedef void (*fn_timer_t)(cots_t *ts, void *th, void *ud1, void *ud2);
 
 // 初始化定时器服务
 cots_t* cots_new(uint16_t interval, uint64_t currtime);
@@ -29,7 +29,7 @@ void* cots_add_timer(cots_t *sv,
     uint32_t delay,     // 首次延迟
     uint32_t loop,      // 后续的间隔，如果为0就没有后续
     fn_timer_t cb,      // 回调函数
-    void *ud1, void *ud2, void *ud3);          // 用户数据
+    void *ud1, void *ud2);          // 用户数据
 // 删除定时器
 void cots_del_timer(cots_t *sv, void **handle);
 // 更新定时器
