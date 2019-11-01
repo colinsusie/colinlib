@@ -34,11 +34,11 @@ void covec_resize(covec_t *vec, int size);
 void covec_growcap(covec_t *vec, int cap);
 
 // 压入子项，index可以为-1, -2..，表示从最后一个计算
-bool covec_push(covec_t *vec, int index, void *data);
+bool covec_push(covec_t *vec, int index, const void *data);
 // 压入最前面
-bool covec_push_head(covec_t *vec, void *data);
+bool covec_push_head(covec_t *vec, const void *data);
 // 压入最后面
-bool covec_push_tail(covec_t *vec, void *data);
+bool covec_push_tail(covec_t *vec, const void *data);
 
 // 取子项，index可以为-1, -2..，表示从最后一个计算
 bool covec_get(covec_t *vec, int index, void *data);

@@ -50,7 +50,7 @@ void covec_growcap(covec_t *vec, int cap) {
     }
 }
 
-bool covec_push(covec_t *vec, int index, void *data) {
+bool covec_push(covec_t *vec, int index, const void *data) {
     if (index < 0)
         index = vec->size + index;
     if (index < 0 || index > vec->size)
@@ -65,11 +65,11 @@ bool covec_push(covec_t *vec, int index, void *data) {
     return true;
 }
 
-bool covec_push_head(covec_t *vec, void *data) {
+bool covec_push_head(covec_t *vec, const void *data) {
     return covec_push(vec, 0, data);
 }
 
-bool covec_push_tail(covec_t *vec, void *data) {
+bool covec_push_tail(covec_t *vec, const void *data) {
     return covec_push(vec, vec->size, data);
 }
 
@@ -150,9 +150,10 @@ void covec_move(covec_t *vec, int from, int to, int count) {
 }
 
 void covec_swap(covec_t *vec, int idx1, int idx2) {
-    uint8_t data1[32], data2[32];
-    uint8_t *ptr1 = vec->itemsize <= 32 ? data1 : CO_MALLOC(vec->itemsize);
-    uint8_t *ptr2 = vec->itemsize <= 32 ? data2 : CO_MALLOC(vec->itemsize);
+    const int stsize = 128;
+    uint8_t data1[stsize], data2[stsize];
+    uint8_t *ptr1 = vec->itemsize <= stsize ? data1 : CO_MALLOC(vec->itemsize);
+    uint8_t *ptr2 = vec->itemsize <= stsize ? data2 : CO_MALLOC(vec->itemsize);
     if (covec_get(vec, idx1, ptr1) && covec_get(vec, idx2, ptr2)) {
         covec_set(vec, idx1, ptr2);
         covec_set(vec, idx2, ptr1);

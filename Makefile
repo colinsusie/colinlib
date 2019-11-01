@@ -3,7 +3,7 @@ all: test
 test: test_falloc test_dict test_vec test_queue test_list test_buffer \
 	test_utf8 test_timingwheel test_timerservice test_coroutine \
 	test_echo_server test_echo_client test_udp_dns test_echo_tps \
-	test_echo_server2 test_echo_client2 test_udp_dns2
+	test_echo_server2 test_echo_client2 test_udp_dns2 test_pqueue
 
 test_falloc: test/test_falloc.c src/co_utils.h src/co_falloc.h src/co_falloc.c
 	gcc -g -Wall -o test_falloc test/test_falloc.c src/co_falloc.c
@@ -16,6 +16,9 @@ test_vec: test/test_vec.c src/co_utils.h src/co_vec.h src/co_vec.c
 
 test_queue: test/test_queue.c src/co_queue.c src/co_utils.h src/co_queue.h src/co_vec.c src/co_vec.h
 	gcc -g -Wall -o test_queue test/test_queue.c src/co_queue.c src/co_vec.c
+
+test_pqueue: test/test_pqueue.c src/co_pqueue.c src/co_utils.h src/co_pqueue.h src/co_vec.c src/co_vec.h
+	gcc -g -Wall -o test_pqueue test/test_pqueue.c src/co_pqueue.c src/co_vec.c
 
 test_list: test/test_list.c src/co_list.c src/co_list.h src/co_utils.h
 	gcc -g -Wall -o test_list test/test_list.c src/co_list.c
