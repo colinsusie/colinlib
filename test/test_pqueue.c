@@ -33,7 +33,7 @@ static int compare2(void *ud, const void *item1, const void *item2) {
 }
 
 void test_pqeue(int maxinum) {
-    cofn_comp_t fn = maxinum ? compare1 : compare2;
+    copqueue_comp_t fn = maxinum ? compare1 : compare2;
     copqueue_t *queue = copqueue_new(sizeof(int), fn, NULL);
     int i, v;
     for (i = 0; i < 11; ++i) {

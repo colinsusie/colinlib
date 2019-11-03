@@ -15,16 +15,16 @@ extern "C" {
 // < 0 item1 < item2
 // = 0 item1 == item2
 // > 0 item1 > item2
-typedef int (*cofn_comp_t)(void *ud, const void *item1, const void *item2);
+typedef int (*copqueue_comp_t)(void *ud, const void *item1, const void *item2);
 
 typedef struct copqueue {
     covec_t *vec;          // 向量 
-    cofn_comp_t fn_comp;   // 比较函数
+    copqueue_comp_t fn_comp;   // 比较函数
     void *ud;              // 用户函数
 } copqueue_t;
 
 // 创建
-copqueue_t* copqueue_new(uint16_t itemsize, cofn_comp_t fn, void *ud);
+copqueue_t* copqueue_new(uint16_t itemsize, copqueue_comp_t fn, void *ud);
 // 释放
 void *copqueue_free(copqueue_t *pq);
 // 队列大小

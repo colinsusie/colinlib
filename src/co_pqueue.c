@@ -4,7 +4,7 @@
 #define HEAP_LCHILD(parent) ((parent) * 2 + 1)
 #define HEAP_RCHILD(parent) ((parent) * 2 + 2)
 
-copqueue_t* copqueue_new(uint16_t itemsize, cofn_comp_t fn, void *ud) {
+copqueue_t* copqueue_new(uint16_t itemsize, copqueue_comp_t fn, void *ud) {
     assert(fn);
     copqueue_t* pq = malloc(sizeof(*pq));
     pq->vec = covec_new(itemsize);
