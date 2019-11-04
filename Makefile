@@ -4,7 +4,10 @@ test: test_falloc test_dict test_vec test_queue test_list test_buffer \
 	test_utf8 test_timingwheel test_timerservice test_coroutine \
 	test_echo_server test_echo_client test_udp_dns test_echo_tps \
 	test_echo_server2 test_echo_client2 test_udp_dns2 test_pqueue \
-	test_set
+	test_set test_misc test_wordfilter
+
+test_misc: test/test_misc.c
+	gcc -g -Wall -o test_misc test/test_misc.c
 
 test_falloc: test/test_falloc.c src/co_utils.h src/co_falloc.h src/co_falloc.c
 	gcc -g -Wall -o test_falloc test/test_falloc.c src/co_falloc.c
@@ -43,6 +46,8 @@ test_timerservice: test/test_timerservice.c src/co_timerservice.c src/co_timerse
 test_coroutine: test/test_coroutine.c src/co_routine.c src/co_routine.h src/co_ctx.c src/co_ctx.h src/coctx_swap.S src/co_utils.h
 	gcc -g -Wall -o test_coroutine test/test_coroutine.c src/co_routine.c src/co_ctx.c src/coctx_swap.S
 
+test_wordfilter: test/test_wordfilter.c misc/co_wordfilter.c src/co_utils.h src/co_vec.h src/co_vec.c src/co_utf8.c src/co_utf8.h
+	gcc -g -Wall -o test_wordfilter test/test_wordfilter.c misc/co_wordfilter.c src/co_vec.c src/co_utf8.c
 
 csrc = $(wildcard src/*.[cS])
 cinc = $(wildcard src/*.h)

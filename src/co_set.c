@@ -306,12 +306,13 @@ void coset_delete(coset_t *set, void *data) {
         memcpy(curr->data, dnode->data, set->datasize);
 
     // 释放内存
-    CO_FREE(dnode);
     set->size--;
 
     // 如果删除结点是黑色，就可能破坏红黑树的规则，要进行修正
     if (dnode->color == 1)
         _coset_delete_fixedup(set, child);
+
+    CO_FREE(dnode);
 }
 
 bool coset_exist(coset_t *set, void *data) {

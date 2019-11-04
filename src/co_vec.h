@@ -70,6 +70,9 @@ void covec_move(covec_t *vec, int from, int to, int count);
 // 交换两个元素
 void covec_swap(covec_t *vec, int idx1, int idx2);
 
+// 简化基本类型取值操作
+#define covec_get_tp(vec, index, type) (*(type*)covec_get_ptr((vec), (index)))
+
 #ifdef __cplusplus
 }
 #endif

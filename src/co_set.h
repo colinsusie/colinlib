@@ -2,6 +2,8 @@
  * 集合：由红黑树实现
  *                  by colin
  */
+#ifndef __CO_SET__
+#define __CO_SET__
 #include "co_utils.h"
 
 #ifdef __cplusplus
@@ -68,4 +70,5 @@ coset_node_t* coset_nil();
 
 #ifdef __cplusplus
 }
+#endif
 #endif

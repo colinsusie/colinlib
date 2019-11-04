@@ -32,7 +32,7 @@ static void _check_and_resize(codict_t *dict) {
     }
 }
 
-codict_t* codict_new(copfn_hash fn_hash, copfn_equal fn_equal) {
+codict_t* codict_new(copfn_hash fn_hash, copfn_equal fn_equal, uint16_t keysz, uint16_t valsz) {
     assert(fn_hash);
     assert(fn_equal);
     codict_t *dict = CO_MALLOC(sizeof(*dict));
@@ -43,41 +43,41 @@ codict_t* codict_new(copfn_hash fn_hash, copfn_equal fn_equal) {
     dict->fn_hash = fn_hash;
     dict->listhead = NULL;
     dict->listtail = NULL;
+    dict->keysz = keysz;
+    dict->valsz = valsz;
     _check_and_resize(dict);
     return dict;
 }
 
-codict_node_t * codict_get(codict_t *dict, const void *key, size_t keysz) {
-    uint64_t hash = dict->fn_hash(key, keysz);
+codict_node_t * codict_get(codict_t *dict, const void *key) {
+    uint64_t hash = dict->fn_hash(key);
     size_t idx = hash % dict->cap;
     codict_node_t *node = dict->buckets[idx];
     for (; node != NULL; node = node->next)
-        if (node->hash == hash && dict->fn_equal(node->key, key, node->keysz, keysz))
+        if (node->hash == hash && dict->fn_equal(node->key, key))
             break;
     return node;
 }
 
-codict_node_t* codict_set(codict_t *dict, const void *key, const void *val, size_t keysz, size_t valsz) {
-    codict_node_t *node = codict_get(dict, key, keysz);
+codict_node_t* codict_set(codict_t *dict, const void *key, const void *val) {
+    codict_node_t *node = codict_get(dict, key);
     if (node) {
-        memcpy(node->value, val, valsz);
+        memcpy(node->value, val, dict->valsz);
         return node;
     }
 
     _check_and_resize(dict);
 
-    uint64_t hash = dict->fn_hash(key, keysz);
+    uint64_t hash = dict->fn_hash(key);
     size_t idx = hash % dict->cap;
-    node = CO_MALLOC(sizeof(codict_node_t) + keysz + valsz);
+    node = CO_MALLOC(sizeof(codict_node_t) + dict->keysz + dict->valsz);
     node->next = dict->buckets[idx];
     dict->buckets[idx] = node;
     node->hash = hash;
     node->key = ((char*)node + sizeof(codict_node_t));
-    memcpy(node->key, key, keysz);
-    node->value = ((char*)node + sizeof(codict_node_t) + keysz);
-    memcpy(node->value, val, valsz);
-    node->keysz = keysz;
-    node->valsz = valsz;
+    memcpy(node->key, key, dict->keysz);
+    node->value = ((char*)node + sizeof(codict_node_t) + dict->keysz);
+    memcpy(node->value, val, dict->valsz);
 
     if (!dict->listhead) {
         dict->listhead = dict->listtail = node;
@@ -93,13 +93,13 @@ codict_node_t* codict_set(codict_t *dict, const void *key, const void *val, size
     return node;
 }
 
-bool codict_del(codict_t *dict, const void *key, size_t keysz) {
-    uint64_t hash = dict->fn_hash(key, keysz);
+bool codict_del(codict_t *dict, const void *key) {
+    uint64_t hash = dict->fn_hash(key);
     size_t idx = hash % dict->cap;
     codict_node_t *node = dict->buckets[idx];
     codict_node_t *curr, *prev;
     for (curr = node; curr != NULL; prev = curr, curr = curr->next) {
-        if (curr->hash == hash && dict->fn_equal(curr->key, key, curr->keysz, keysz))
+        if (curr->hash == hash && dict->fn_equal(curr->key, key))
             break;
     }
     if (!curr)
@@ -190,40 +190,30 @@ static uint64_t codict_fnv1a64_hash(const void *key, size_t len) {
     return hash;
 }
 
-static int codict_str_equal(const void *key1, const void *key2, size_t sz1, size_t sz2) {
-    return (sz1 == sz2) && (memcmp(key1, key2, sz1) == 0);
+bool codict_str_equal(const void *key1, const void *key2) {
+    const char *str1 = *(const char **)(key1);
+    const char *str2 = *(const char **)(key2);
+    return strcmp(str1, str2) == 0;
 }
 
-codict_t* codict_str() {
-    return codict_new(codict_fnv1a64_hash, codict_str_equal);
+bool codict_int_equal(const void *key1, const void *key2) {
+    return *(int*)key1 == *(int*)key2;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-static uint64_t codict_int_hash(const void *key, size_t len) {
-    (void)len;
-    return *(uint64_t*)key;
+bool codict_ptr_equal(const void *key1, const void *key2) {
+    return *(intptr_t*)key1 == *(intptr_t*)key2;
 }
 
-static int codict_int_equal(const void *key1, const void *key2, size_t sz1, size_t sz2) {
-    (void)sz1; (void)sz2;
-    return *(int64_t*)key1 == *(int64_t*)key2;
+uint64_t codict_str_hash(const void *key) {
+    const char *str = *(const char **)(key);
+    int len = strlen(str);
+    return codict_fnv1a64_hash(str, len);
 }
 
-codict_t* codict_int() {
-    return codict_new(codict_int_hash, codict_int_equal);
+uint64_t codict_int_hash(const void *key) {
+    return *(int*)key;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-static uint64_t codict_ptr_hash(const void *key, size_t len) {
-    (void)len;
-    return *(uint64_t*)key;
-}
-
-static int codict_ptr_equal(const void *key1, const void *key2, size_t sz1, size_t sz2) {
-    (void)sz1; (void)sz2;
-    return *(uint64_t*)key1 == *(uint64_t*)key2;
-}
-
-codict_t* codict_ptr() {
-    return codict_new(codict_ptr_hash, codict_ptr_equal);
+uint64_t codict_ptr_hash(const void *key) {
+    return *(uintptr_t*)key;
 }
