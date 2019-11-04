@@ -1,15 +1,31 @@
 # colinlib
 
-由C语言实现的单线程高并发的网络基础库，实现的功能有：
+由C语言实现的基础库，提供的功能有：
 
-- 通用的数据结构：如字典(哈希表)，向量数组，循环队列，双向链表，固定长度的内存分配器等。
-- 网络编程中经常用到的buffer：可读写的buffer，环形buffer等。
-- 基于时间轮算法的高效定时器。
-- 独立栈的协程库，快速的执行环境切换(基于少量汇编代码)。
-- 封装epoll/kqueue的高并发异步IO框架：支持tcp, udp和其他fd的异步IO。
-- 整合上面的协程库以及异步IO框架，实现“同步”的读写。
+## 基础库
+- co_vec 向量数组
+- co_dict 字典(哈希表)，内部有一个链表用于遍历，使用它可以实现lrucache
+- co_set 集合，内部由红黑树实现。
+- co_list 双向链表
+- co_queue 循环队列
+- co_pqueue 优先队列
+- co_buffer 可读写bufer，环形buffer
+- co_utf8 utf8解码
+- ca_falloc 固定长度的分配器
+- co_endian 大小端字节序的转换
 
-该库没有使用全局变量，函数也是可重入的，所以理论上可以安全的跑在独立线程上。
+## 网络库
+- co_timingwheel 基于时间轮的高效定时器
+- co_timerservice 定时器服务
+- co_routine 高效协程库，基于少量汇编的快速执行环境切换
+- co_loop/co_poll/co_ioservice 封装epoll/kqueue的高并发异步IO框架：支持tcp, udp和其他fd的异步IO。
+- co_routineex 整合上面的协程库以及异步IO框架，实现“同步”的读写。
+- co_dnsutils DNS解析函数
+
+## 其他
+- co_wordfilter 关键字过滤
+
+该库没有使用全局变量，函数也是可重入的，理论上可以安全的跑在独立线程上。
 
 # 编译以及测试
 
@@ -23,7 +39,7 @@ cd colinlib
 make
 ```
 
-测试程序用于验证代码的正确性，同时也是了解代码用法的途径，下面几个测试程序重点说明：
+测试程序用于验证代码的正确性，同时也是了解代码用法的途径，比如下面几个测试程序：
 
 - test_echo_server/test_echo_client echo服务器和客户端，基于事件回调的方式，用少量代码即可实现功能。
 - test_echo_server2/test_echo_client2 另一个echo服务器和客户端，基于协程的同步方式，与上面相比哪种更好，由自己选择。
@@ -95,7 +111,5 @@ int main(int argc, char const *argv[]) {
 ```
 
 ## 最后
-
-由于作者工作的原因，该库并未用于实际的生产环境，请谨慎选择，若只当成学习目的，那应该是相当好的。
 
 虽然写了很多测试程序，并且用valgrind检查过内存问题，但错误在所难免，如果发现问题，欢迎提Issues。
