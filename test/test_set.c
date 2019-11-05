@@ -42,7 +42,7 @@ int MAX(int X, int Y) { return ((X) > (Y)) ? (X) : (Y); }
 asciinode *build_ascii_tree_recursive(coset_t *tree, coset_node_t *t) {
     asciinode *node;
 
-    if (t == coset_nil()) return NULL;
+    if (t == coset_nil(tree)) return NULL;
 
     node = malloc(sizeof(asciinode));
     node->left = build_ascii_tree_recursive(tree, t->left);
@@ -214,7 +214,7 @@ void print_level(asciinode *node, int x, int level) {
 void print_ascii_tree(coset_t *tree, coset_node_t *t) {
     asciinode *proot;
     int xmin, i;
-    if (t == coset_nil()) return;
+    if (t == coset_nil(tree)) return;
     proot = build_ascii_tree(tree, t);
     compute_edge_lengths(proot);
     for (i = 0; i < proot->height && i < MAX_HEIGHT; i++) {
@@ -254,7 +254,7 @@ void print_set(coset_t *set) {
     coset_node_t *node = coset_end(set);
     while (node) {
         printf("%d ", coset_data(node, int));
-        node = coset_prev(node);
+        node = coset_prev(set, node);
     }
     printf("\n");
 }
@@ -314,6 +314,8 @@ void test2() {
     coset_add_tp(set, 17, int);
     coset_add_tp(set, 89, int);
     coset_add_tp(set, 50, int);
+    draw_set(set);
+    
     printf("set size=%d\n", coset_size(set));
     int v = 20;
     printf("data=%d, exist=%d\n", v, coset_exist(set, &v));

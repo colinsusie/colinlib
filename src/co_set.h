@@ -25,7 +25,9 @@ typedef struct coset_node {
 typedef int (*coset_comp_t)(void *ud, const void *data1, const void *data2);
 
 typedef struct coset {
-    coset_node_t *root;
+    coset_node_t nilnode;   // 代表空结点
+    coset_node_t *root;     // 根结点
+    coset_node_t *nil;      // 指向空结点
     coset_comp_t fn_comp;
     void *ud;
     int size;
@@ -54,8 +56,8 @@ void coset_intersect(coset_t *set, coset_t *set2);
 void coset_minus(coset_t *set, coset_t *set2);
 // 遍历 
 coset_node_t* coset_begin(coset_t *set);
-coset_node_t* coset_next(coset_node_t *curr);
-coset_node_t* coset_prev(coset_node_t *curr);
+coset_node_t* coset_next(coset_t *set, coset_node_t *curr);
+coset_node_t* coset_prev(coset_t *set, coset_node_t *curr);
 coset_node_t* coset_end(coset_t *set);
 // 取值
 #define coset_data(node, type) (*(type*)((node)->data))
@@ -66,7 +68,7 @@ coset_node_t* coset_end(coset_t *set);
 
 
 // 取nil结点，调试用
-coset_node_t* coset_nil();
+coset_node_t* coset_nil(coset_t *set);
 
 #ifdef __cplusplus
 }
