@@ -2,6 +2,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stddef.h>
 
 #define MAX_BLOCK_SIZE 16*1024
 #define MIN_BLOCK_SIZE 4096
@@ -25,12 +26,12 @@ void cofalloc_free(cofalloc_t *alloc) {
 
 void* cofalloc_newitem(cofalloc_t *alloc) {
     if (!alloc->freeitem) {
-        co_memblock_t *block = CO_MALLOC(alloc->blocksize);
+        co_memblock_t *block = (co_memblock_t*)CO_MALLOC(alloc->blocksize);
         block->next = alloc->memblock;
         alloc->memblock = block;
         int idx = 0;
         int itemsize = alloc->itemsize;
-        int blocksize = alloc->blocksize;
+        int blocksize = alloc->blocksize - offsetof(co_memblock_t, buffer);
         while (idx + itemsize <= blocksize) {
             co_blockitem_t *item = (co_blockitem_t*)(block->buffer + idx);
             item->next = alloc->freeitem;
